@@ -17,7 +17,7 @@ def calculate_pi(decimal):
         pi_prev, pi_now = pi_now, next(pi_gen)
     return pi_now
 
-
+# Archimedes method
 def polygon(steps):
     sides = 2 ** (steps + 1)
     side_squared = 2
@@ -27,7 +27,7 @@ def polygon(steps):
         print(side_squared)
     return sides * sqrt(side_squared) / 2
 
-
+# Monte Carlo method, random sampling
 def montecarlo(points):
     darts = []
     for _ in range(points):
@@ -35,16 +35,18 @@ def montecarlo(points):
     pi = 4 * len([_ for (x, y) in darts if sqrt(x**2 + y**2) < 1]) / len(darts)
     return pi
 
-
+# Basel problem
+# ∑(n=1→∞) 1/n² = π²/6
 @timeit
 def series(components):
     result = 0
-    for natural in range(components):
-        result += 1 / (natural + 1)**2
+    for natural in range(1, components):
+        result += 1 / (natural)**2
     return sqrt(6 * result)
 
 
 # Gregory-Leibniz formula
+# ∑(n=0→∞) (-1)ⁿ/(2n+1) = π/4
 @timeit
 def series_odd(components):
     pi = 0
@@ -55,7 +57,7 @@ def series_odd(components):
             pi += 4 / (1 + natural * 2)
     return pi
 
-
+# Based on Leibniz formula
 def pi_generator():
     pi = 0
     natural = 0
@@ -68,11 +70,13 @@ def pi_generator():
         natural += 1
 
 
+print("π = {}".format(math.pi))
+    
 print(calculate_pi(input("Decimal places of Pi to calculate: ")))
 
 # print("polygon: {}".format(polygon(20)))
 # print("montecarlo: {}".format(montecarlo(100000)))
-# print("series: {}".format(series(1000000)))
+print("series: {}".format(series(1000000)))
 # print("series_odd: {}".format(series_odd(1000000)))
 
 # print("series: {}".format(series(1000000) - math.pi))
