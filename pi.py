@@ -3,17 +3,28 @@
 # Try to keep a limit as to how far the program will go.
 import random
 from math import sqrt
+from timer_decorator import timeit
+import math
 
 
+@timeit
 def calculate_pi(decimal):
-    pass
+    decimal = 10.0**-int(decimal)
+    pi_gen = pi_generator()
+    pi_prev = next(pi_gen)
+    pi_now = next(pi_gen)
+    while pi_prev//decimal != pi_now//decimal:
+        pi_prev, pi_now = pi_now, next(pi_gen)
+    return pi_now
 
 
 def polygon(steps):
     sides = 2 ** (steps + 1)
     side_squared = 2
     for _ in range(steps - 1):
+        print(4 - side_squared)
         side_squared = 2 - sqrt(4 - side_squared)
+        print(side_squared)
     return sides * sqrt(side_squared) / 2
 
 
@@ -25,6 +36,7 @@ def montecarlo(points):
     return pi
 
 
+@timeit
 def series(components):
     result = 0
     for natural in range(components):
@@ -32,7 +44,8 @@ def series(components):
     return sqrt(6 * result)
 
 
-# Gregory-Leibniz series
+# Gregory-Leibniz formula
+@timeit
 def series_odd(components):
     pi = 0
     for natural in range(components):
@@ -43,8 +56,24 @@ def series_odd(components):
     return pi
 
 
-# print(calculate_pi(input("Decimal places of Pi to calculate: ")))
-print(polygon(20))
-print(montecarlo(100000))
-print(series(100000))
-print(series_odd(1000000))
+def pi_generator():
+    pi = 0
+    natural = 0
+    while True:
+        if natural % 2:
+            pi -= 4 / (1 + natural * 2)
+        else:
+            pi += 4 / (1 + natural * 2)
+        yield pi
+        natural += 1
+
+
+print(calculate_pi(input("Decimal places of Pi to calculate: ")))
+
+# print("polygon: {}".format(polygon(20)))
+# print("montecarlo: {}".format(montecarlo(100000)))
+# print("series: {}".format(series(1000000)))
+# print("series_odd: {}".format(series_odd(1000000)))
+
+# print("series: {}".format(series(1000000) - math.pi))
+# print("series_odd: {}".format(series_odd(1000000) - math.pi))
