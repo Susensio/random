@@ -3,12 +3,14 @@
 
 
 import math
+from timer_decorator import timeit
 
 
 def prime_factors(number):
     return []
 
 
+@timeit
 def primes_upto(number):
     primes = []
     for n in range(number):
@@ -34,5 +36,16 @@ def is_prime(number):
     return not factors(number)
 
 
+# Algorithm for finding all prime numbers up to any diven limit
+@timeit
+def sieve_of_eratosthenes(ceil):
+    primes = range(2, ceil)
+    for prime in primes:
+        # print(primes)
+        primes = [number for number in primes if (number % prime) or (number == prime)]
+    return primes
+
+
 if __name__ == "__main__":
-    print(primes_upto(100))
+    print(primes_upto(1000))
+    print(sieve_of_eratosthenes(1000))

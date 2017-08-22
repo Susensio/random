@@ -18,6 +18,7 @@ def calculate_pi(decimal):
     return pi_now
 
 # Archimedes method
+# If steps > 25, catastrophic cancellation occurs!
 def polygon(steps):
     sides = 2 ** (steps + 1)
     side_squared = 2
