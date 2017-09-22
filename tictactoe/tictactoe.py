@@ -19,11 +19,11 @@ class TicTacToeBoard(object):
     """
 
     # The horizontal width of the board
-    _board_width = 5
+    _board_width = 3
     # The vertical height of the board
-    _board_height = 5
+    _board_height = 3
 
-    _goal = 4
+    _goal = 3
 
     board_symbol_mapping = {0: ' ',
                             1: 'X',
