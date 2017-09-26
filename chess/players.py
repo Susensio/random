@@ -11,14 +11,14 @@ except ValueError:                 # Windows doesn't support 'float("infinity")'
 
 @memoize
 def basic_evaluate(board):
-    # if board.is_checkmate():
-    #     score = -100000
-    # else:
-    #     pieces_score = board.get_pieces_score()
-    #     space_score = board.get_space_score()
-    #     score = pieces_score * 7 + space_score
-    # return score
-    return board.get_pieces_score()
+    if board.is_checkmate():
+        score = -100000
+    else:
+        pieces_score = board.get_pieces_score()
+        space_score = board.get_space_score()
+        score = pieces_score * 7 + space_score
+    return score
+    # return board.get_pieces_score()
 
 
 @memoize
@@ -144,7 +144,7 @@ def basic_player(board): return minimax(board, depth=4, eval_fn=basic_evaluate)
 def progressive_deepening_player(board): return run_search_function(board, search_fn=minimax, eval_fn=basic_evaluate, timeout=10)
 
 
-def alphabeta_player(board): return alpha_beta_search(board, depth=4, eval_fn=basic_evaluate)
+def alphabeta_player(board): return alpha_beta_search(board, depth=3, eval_fn=basic_evaluate)
 
 
 def alphabeta_defensive_player(board): return alpha_beta_search(board, depth=5, eval_fn=defensive_evaluate)
