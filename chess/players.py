@@ -9,12 +9,38 @@ except ValueError:                 # Windows doesn't support 'float("infinity")'
     NEG_INFINITY = float(-1e3000)  # the magic float Infinity value anyway.
 
 
+@memoize
 def basic_evaluate(board):
+    # if board.is_checkmate():
+    #     score = -100000
+    # else:
+    #     pieces_score = board.get_pieces_score()
+    #     space_score = board.get_space_score()
+    #     score = pieces_score * 7 + space_score
+    # return score
+    return board.get_pieces_score()
 
-    pieces_score = board.get_pieces_score()
-    space_score = board.get_space_score()
 
-    return pieces_score * 6 + space_score
+@memoize
+def agressive_evaluate(board):
+    if board.is_checkmate():
+        score = -100000
+    else:
+        pieces_score = board.get_pieces_score()
+        space_score = board.get_space_score()
+        score = pieces_score * 4 + space_score
+    return score
+
+
+@memoize
+def defensive_evaluate(board):
+    if board.is_checkmate():
+        score = -100000
+    else:
+        pieces_score = board.get_pieces_score()
+        space_score = board.get_space_score()
+        score = pieces_score * 8 + space_score
+    return score
 
 
 def is_terminal(depth, board):
@@ -22,7 +48,7 @@ def is_terminal(depth, board):
     Generic terminal state check, true when maximum depth is reached or
     the game has ended.
     """
-    return depth <= 0 or board.is_win()
+    return depth <= 0 or board.is_checkmate()
 
 
 def minimax_find_board_value(board, depth, eval_fn):
@@ -82,7 +108,7 @@ def alpha_beta_search(board, depth,
             best_val = (val, move, new_board)
 
         alpha = max(alpha, val)
-
+    print(best_val[0])
     return best_val[1]
 
 
@@ -121,7 +147,28 @@ def progressive_deepening_player(board): return run_search_function(board, searc
 def alphabeta_player(board): return alpha_beta_search(board, depth=4, eval_fn=basic_evaluate)
 
 
+def alphabeta_defensive_player(board): return alpha_beta_search(board, depth=5, eval_fn=defensive_evaluate)
+
+
 def ab_iterative_player(board): return \
     run_search_function(board,
                         search_fn=alpha_beta_search,
                         eval_fn=basic_evaluate, timeout=10)
+
+
+def agressive_player(board): return \
+    run_search_function(board,
+                        search_fn=alpha_beta_search,
+                        eval_fn=agressive_evaluate, timeout=10)
+
+
+def defensive_player(board): return \
+    run_search_function(board,
+                        search_fn=alpha_beta_search,
+                        eval_fn=defensive_evaluate, timeout=10)
+
+
+def slow_player(board): return \
+    run_search_function(board,
+                        search_fn=alpha_beta_search,
+                        eval_fn=basic_evaluate, timeout=40)

@@ -1,4 +1,5 @@
 # coding=UTF-8
+import time
 # import sys
 # sys.path.append("../")
 # from timer_decorator import timeit
@@ -99,9 +100,9 @@ class ChessBoard(object):
     @staticmethod
     def get_square_index(square):
         """ Translates a square name 'b3' into indexes (1,2)"""
-        assert(len(square)==2)
+        assert(len(square) == 2)
         square_index = (int(square[1]) - 1, ord(square[0].lower()) - 97)
-        assert(0<=square_index[0]<8 and 0<=square_index[1]<8)
+        assert(0 <= square_index[0] < 8 and 0 <= square_index[1] < 8)
         return square_index
 
     @staticmethod
@@ -116,8 +117,8 @@ class ChessBoard(object):
             return 1
 
     def get_pieces_score(self):
-        score = sum([sum([self._pieces[piece[1]]['value'] for piece in row if piece[0] == self.current_player]) for row in self.board_array])
-        score -= sum([sum([self._pieces[piece[1]]['value'] for piece in row if piece[0] == self.current_player]) for row in self.board_array])
+        score = sum([self._pieces[piece[1]]['value'] for row in self.board_array for piece in row if piece[0] == self.current_player])
+        score -= sum([self._pieces[piece[1]]['value'] for row in self.board_array for piece in row if piece[0] == self.other_player])
         return score
 
     def get_space_score(self):
@@ -126,7 +127,24 @@ class ChessBoard(object):
         return score
 
     def is_check(self):
-        return (self.current_player,1) in [self.get_square(*move[1]) for move in self.get_all_next_moves(self.other_player)]
+        return (self.current_player, 1) in [self.get_square(*move[1]) for move in self.get_all_next_moves(self.other_player, check=False)]
+
+    def is_checkmate(self):
+        checkmate1 = all([
+            any([(self.current_player, 1) in [board.get_square(*move[1])]
+                 for move in board.get_all_next_moves()])
+            for _, board in self.get_all_next_moves_done()])
+
+        checkmate = []
+        for _, board in self.get_all_next_moves_done():
+            check = []
+            for move in board.get_all_next_moves():
+                check += [(self.current_player, 1) in [board.get_square(*move[1])]]
+            checkmate += [any(check)]
+        if checkmate1 != all(checkmate):
+            raise Exception("CHECKMATE ERROR!!!!")
+        return all(checkmate)
+        # return any([[(self.current_player, 1) in [board.get_square(*move[1]) for move in board.get_all_next_moves()]] for _, board in self.get_all_next_moves_done()])
 
     def is_win(self):
         """
@@ -153,7 +171,7 @@ class ChessBoard(object):
             if self.castling.get(start):
                 # Rock moved
                 self.castling[start] = False
-            if self.get_square(*start) == 1:
+            if self.get_square(*start)[1] == 1:
                 # King moved
                 self.castling[(start[0], 0)] = False
                 self.castling[(start[0], 7)] = False
@@ -172,7 +190,13 @@ class ChessBoard(object):
 
                 row_start = list(new_board[start[0]])
                 row_end = list(new_board[end[0]])
-                row_end[end[1]] = self.get_square(*start)
+
+                if self.get_square(*start) == 6 and end[0] in (0, 7):
+                    # Pawn promotion
+                    row_end[end[1]] = (self.get_square(*start)[0], 2)
+                else:
+                    row_end[end[1]] = self.get_square(*start)
+
                 row_start[start[1]] = (0, 0)
                 new_board[start[0]] = row_start
                 new_board[end[0]] = row_end
@@ -237,7 +261,7 @@ class ChessBoard(object):
                     break
         return squares
 
-    def get_valid_moves(self, row, col):
+    def get_valid_moves(self, row, col, check=True):
         piece = self.get_square(row, col)
         moves = []
         if piece[1] == 1:
@@ -247,20 +271,18 @@ class ChessBoard(object):
                       and (0 <= row + i < 8 and 0 <= col + j < 8)
                       and self.get_square(row + i, col + j)[0] != piece[0]]
             # Castling
-            if row in (0,7):
-                if self.castling[(row,0)]:
+            if row in (0, 7):
+                if self.castling[(row, 0)]:
                     # Long castling
-                    if self.is_empty(row,1) and self.is_empty(row,2) and self.is_empty(row,3):
-                        # if not self.is_check():
-                            moves += ((row,0),(row,3),(row,4),(row,2))
+                    if self.is_empty(row, 1) and self.is_empty(row, 2) and self.is_empty(row, 3):
+                        if not self.is_check() and check:
+                            moves += [((row, 0), (row, 3), (row, 4), (row, 2))]
 
-                if self.castling[(row,7)]:
+                if self.castling[(row, 7)]:
                     # Short castling
-                    if self.is_empty(row,6) and self.is_empty(row,5):
-                        # if not self.is_check():
-                            moves += ((row,7),(row,5),(row,4),(row,6))
-
-
+                    if self.is_empty(row, 6) and self.is_empty(row, 5):
+                        if not self.is_check() and check:
+                            moves += [((row, 7), (row, 5), (row, 4), (row, 6))]
 
         elif piece[1] == 2:
             # QUEEN
@@ -291,21 +313,21 @@ class ChessBoard(object):
                       if (0 <= row + direction < 8 and 0 <= col + j < 8)
                       and self.get_square(row + direction, col + j)[0] not in (0, piece[0])]
             if ((row == 1 and direction == 1) or (row == 6 and direction == -1)
-                and self.get_square(row + direction, col)[0] == 0 and self.get_square(row + direction * 2, col)[0] == 0):
+                    and self.get_square(row + direction, col)[0] == 0 and self.get_square(row + direction * 2, col)[0] == 0):
                 moves += [((row, col), (row + direction * 2, col))]
             moves += [((row, col), (row + direction, col + j)) for j in (-1, 1)
                       if (row, col + j) in self.en_passant]
 
         return moves
 
-    def get_all_next_moves(self, player=None):
+    def get_all_next_moves(self, player=None, check=True):
         """ Return a generator of all moves that the current player could take from this position """
         if player is None:
             player = self.current_player
         for i in range(8):
             for j in range(8):
                 if self.get_square(i, j)[0] == player:
-                    moves = self.get_valid_moves(i, j)
+                    moves = self.get_valid_moves(i, j, check)
                     for move in moves:
                         yield move
 
@@ -317,15 +339,16 @@ class ChessBoard(object):
         return ChessBoard(self.board_array, self.castling, self.en_passant, self.current_player)
 
     def __str__(self):
-        retVal = ['Turn for {}'.format('whites' if self.current_player == 1 else 'blacks')]
-        horizontal_line = "  " + " ――――" * 8
+        retVal = []
+        # horizontal_line = "  " + " ――――" * 8
+        horizontal_line = "  " + " ----" * 8
 
         retVal += [horizontal_line]
         for i in range(8):
             retVal += [str(8 - i) + ' | ' + ' | '.join([self.pretty_piece(x) for x in self.board_array[-1 - i]]) + ' |']
             retVal += [horizontal_line]
         retVal += ["    " + '    '.join([str(x) for x in 'abcdefgh'])]
-        return '\n' + '\n'.join(retVal) + '\n'
+        return '\n'.join(retVal) + '\n'
 
 
 class ChessRunner(object):
@@ -348,11 +371,15 @@ class ChessRunner(object):
         player2 = (self.player2_callback, 2, "Blacks")
 
         win_for_player = None
+        turn = 0
+        ts = time.time()
 
         # while not win_for_player and not self.board.is_checkmate():
         while not win_for_player:
             for callback, id, symbol in (player1, player2):
+                turn += 1
                 if verbose:
+                    print('Turn for {}'.format('whites' if self.board.current_player == 1 else 'blacks'))
                     print(self.board)
 
                 has_moved = False
@@ -360,7 +387,7 @@ class ChessRunner(object):
                 while not has_moved:
                     try:
                         target = callback(self.board.clone())
-                        print("Player {} ({}) plays {}".format(id, symbol, ChessBoard.pretty_move(target)))
+                        print("Turn {}: Player {} ({}) plays {}\n".format(turn, id, symbol, ChessBoard.pretty_move(target)))
                         self.board = self.board.do_move(target)
                         has_moved = True
                     except InvalidMoveException as e:
@@ -368,13 +395,18 @@ class ChessRunner(object):
                         print("Illegal move attempted. Please try again.")
                         continue
 
-                # if self.board.is_game_over():
-                #     win_for_player = self.board.is_win()
-                #     break
+                if self.board.is_checkmate():
+                    win_for_player = self.board.other_player
+                    break
+                elif self.board.is_check():
+                    print("Check!")
 
-                win_for_player = self.board.is_win()
                 if win_for_player:
                     break
+
+                te = time.time()
+                print(te - ts)
+                ts = te
 
         # win_for_player = self.board.is_win()
 
@@ -383,7 +415,7 @@ class ChessRunner(object):
         #     print(self.board)
         #     return 0
         # else:
-        print("Win for {}!".format(self.board._players[win_for_player]))
+        print("Checkmate! Win for {}!".format(self.board._players[win_for_player]))
         print(self.board)
         return win_for_player
 
@@ -413,15 +445,15 @@ def human_player(board):
 
     move = (start, end)
 
-    if start in ((0,4),(7,4)) and board.get_square(*start)[1] == 1:
-        # King 
-        if start[1]-end[1] == 2:
+    if start in ((0, 4), (7, 4)) and board.get_square(*start)[1] == 1:
+        # King
+        if start[1] - end[1] == 2:
             # Long castling
-            move = ((start[0],0),(start[0],3),start,end)
-        elif start[1]-end[1] == -2:
+            move = ((start[0], 0), (start[0], 3), start, end)
+        elif start[1] - end[1] == -2:
             # Short castling
-            move = ((start[0],7),(start[0],5),start,end)
-    
+            move = ((start[0], 7), (start[0], 5), start, end)
+
     if move not in board.get_all_next_moves():
         raise InvalidMoveException
 
