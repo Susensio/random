@@ -184,14 +184,18 @@ class ChessBoard(object):
                 new_board[start[0]] = row
             else:
                 # Different rows
-                if self.get_square(*start) == 6 and start[1] - end[1] in (-2, 2):
+                if self.get_square(*start)[1] == 6 and start[0] - end[0] in (-2, 2):
                     # Pawn possible enpassant
                     en_passant = end
 
                 row_start = list(new_board[start[0]])
                 row_end = list(new_board[end[0]])
 
-                if self.get_square(*start) == 6 and end[0] in (0, 7):
+                if self.get_square(*start)[1] == 6 and (start[0], end[1]) == self.en_passant:
+                    # Pawn kill enpassant
+                    row_start[end[1]] = (0, 0)
+
+                if self.get_square(*start)[1] == 6 and end[0] in (0, 7):
                     # Pawn promotion
                     row_end[end[1]] = (self.get_square(*start)[0], 2)
                 else:
@@ -316,7 +320,7 @@ class ChessBoard(object):
                     and self.get_square(row + direction, col)[0] == 0 and self.get_square(row + direction * 2, col)[0] == 0):
                 moves += [((row, col), (row + direction * 2, col))]
             moves += [((row, col), (row + direction, col + j)) for j in (-1, 1)
-                      if (row, col + j) in self.en_passant]
+                      if (row, col + j) == self.en_passant]
 
         return moves
 

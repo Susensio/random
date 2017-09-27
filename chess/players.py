@@ -96,7 +96,7 @@ def minimax(board, depth, eval_fn=basic_evaluate,
 
 def alpha_beta_search(board, depth,
                       eval_fn):
-
+    print("Depth: {}".format(depth))
     best_val = None
     alpha = NEG_INFINITY
     beta = INFINITY
@@ -138,22 +138,22 @@ def alpha_beta_search_find_board_value(board, depth, eval_fn,
     return best_val
 
 
-def basic_player(board): return minimax(board, depth=4, eval_fn=basic_evaluate)
+def basic_player(board): return minimax(board, depth=6, eval_fn=basic_evaluate)
 
 
 def progressive_deepening_player(board): return run_search_function(board, search_fn=minimax, eval_fn=basic_evaluate, timeout=10)
 
 
-def alphabeta_player(board): return alpha_beta_search(board, depth=3, eval_fn=basic_evaluate)
+def alphabeta_player(board): return alpha_beta_search(board, depth=6, eval_fn=basic_evaluate)
 
 
-def alphabeta_defensive_player(board): return alpha_beta_search(board, depth=5, eval_fn=defensive_evaluate)
+def alphabeta_defensive_player(board): return alpha_beta_search(board, depth=6, eval_fn=defensive_evaluate)
 
 
 def ab_iterative_player(board): return \
     run_search_function(board,
                         search_fn=alpha_beta_search,
-                        eval_fn=basic_evaluate, timeout=10)
+                        eval_fn=basic_evaluate, timeout=600)
 
 
 def agressive_player(board): return \
@@ -165,10 +165,10 @@ def agressive_player(board): return \
 def defensive_player(board): return \
     run_search_function(board,
                         search_fn=alpha_beta_search,
-                        eval_fn=defensive_evaluate, timeout=10)
+                        eval_fn=defensive_evaluate, timeout=600)
 
 
 def slow_player(board): return \
     run_search_function(board,
                         search_fn=alpha_beta_search,
-                        eval_fn=basic_evaluate, timeout=40)
+                        eval_fn=basic_evaluate, timeout=60)
