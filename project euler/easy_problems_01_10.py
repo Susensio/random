@@ -67,7 +67,7 @@ def p5():
         if all([not number % factor for factor in factors]):
             return number
         number += 20
-    # VERY SLOW (13s) different approach is possible
+    # VERY SLOW (15s) different approach is possible
 
 
 def p6():
@@ -170,7 +170,17 @@ def p10():
     # NOT ANY FUCKING MORE (5s!)
 
 
-ts = time()
-print(p10())
-te = time()
-print(te - ts)
+if __name__ == '__main__':
+
+    # ts = time()
+    # print(p10())
+    # te = time()
+    # print(te - ts)
+
+    functions = (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
+
+    for func in functions:
+        ts = time()
+        print(func())
+        te = time()
+        print("{}(): {} s\n".format(func.__name__, (te - ts)))
