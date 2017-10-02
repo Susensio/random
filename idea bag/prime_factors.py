@@ -3,7 +3,6 @@
 
 import sys
 sys.path.append("../")
-import math
 from timer_decorator import timeit
 
 
@@ -39,14 +38,13 @@ def prime_generator():
 # @timeit
 def factors(number):
     min = 2
-    max = int(math.sqrt(number))
+    max = int(number**0.5)
     factors = set()
     while min <= max:
         if not number % min:
             factors.update([min, number // min])
         min += 1
-
-    return sorted(factors)
+    return tuple(sorted(factors))
 
 
 @timeit
@@ -54,7 +52,7 @@ def is_prime_slow(number):
     return not factors(number)
 
 
-@timeit
+# @timeit
 def is_prime(number):
     if number == 1:
         return False
@@ -67,7 +65,7 @@ def is_prime(number):
     elif not number % 3:
         return False
     else:
-        roof = int(math.sqrt(number))
+        roof = int(number**0.5)
         factor = 5
         while factor <= roof:
             if not number % factor:
@@ -94,3 +92,10 @@ if __name__ == "__main__":
     # print(prime_factors(13195))
 
     # print(nth_prime(10001))
+
+    # from time import time
+    # ts = time()
+    # [factors(number) for number in range(1, 100000)]
+    # te = time()
+    # print("{}(): {} s\n".format("factor:", (te - ts)))
+    pass

@@ -5,13 +5,19 @@
 
 def fibonacci(number):
     sequence = []
-    a = b = 1
-
+    fibonacci_number = fibonacci_generator()
     while len(sequence) < number:
-        sequence.append(a)
-        a, b = b, a + b
+        sequence.append(next(fibonacci_number))
 
     return sequence
 
 
-print(fibonacci(int(input("Fibonacci sequence: "))))
+def fibonacci_generator():
+    a = b = 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+
+if __name__ == '__main__':
+    print(fibonacci(int(input("Fibonacci sequence: "))))
