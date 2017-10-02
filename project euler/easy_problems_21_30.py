@@ -121,22 +121,11 @@ def p24():
     from util import memoize
 
     @memoize
-    def permute(digits, depth=None):
-        if depth == None:
-            # print("start")
-            depth = len(digits)
-        if depth == 1:
-            # print("end")
-            return digits
-        perms = []
-        for digit in digits:
-            # print(digit)
-            new_digits = list(digits)
-            new_digits.remove(digit)
-            # print(depth, new_digits)
-            perms += ([digit * 10**depth + number for number in permute(tuple(new_digits), depth - 1)])
-        return perms
-        # return (digit * 10**depth + number for digit in digits for number in permute(digits.remove(digit), depth - 1))
+    def permute(digits):
+        if len(digits) == 1:
+            return digits[0]
+        else:
+            return []
 
     perms = list(permute(tuple(range(2))))
     # assert(perms[0] == 123456789)
