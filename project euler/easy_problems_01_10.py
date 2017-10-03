@@ -48,12 +48,20 @@ def p4():
     """
     def is_palindromic(num):
         number = str(num)
-        return all([number[index] == number[-1 - index] for index in range(0, len(number) // 2)])
+        index = 0
+        while index < len(number)//2:
+            if not number[index] == number[-1 - index]:
+                # Break the loop as soon as not equality is found
+                return False
+            index += 1
+        return True
+        # return all([number[index] == number[-1 - index] for index in range(0, len(number) // 2)])
 
     palindromes = [x * y for x in range(100, 1000)
                    for y in range(100, 1000)
                    if x >= y and is_palindromic(x * y)]
-    return max(sorted(palindromes, reverse=True))
+
+    return sorted(palindromes, reverse=True)[0]
 
 
 def p5():
@@ -72,15 +80,22 @@ def p5():
     from functools import reduce
 
     def gcd(numbers):
-        """Return the greatest common divisor of the given integers"""
-        from fractions import gcd
+        """ Return the greatest common divisor of the given integers
+        Euclidean algorithm """
+        def gcd(a, b):
+            if b == 0:
+                return a
+            else:
+                return gcd(b, a % b)
+
         return reduce(gcd, numbers)
 
     def lcm(numbers):
-        """Return lowest common multiple."""
+        """ Return lowest common multiple."""
         def lcm(a, b):
             return (a * b) // gcd((a, b))
-        return reduce(lcm, numbers, 1)
+
+        return reduce(lcm, numbers)
 
     return lcm(list(factors))
 
@@ -172,25 +187,27 @@ def p10():
     """
     import sys
     sys.path.append("../idea bag/")
-    from prime_factors import prime_generator
-
-    prime = 0
-    sum_of_primes = 0
-    primes = prime_generator()
-    while prime < 2000000:
-        sum_of_primes += prime
-        prime = next(primes)
-    return sum_of_primes
+    from prime_factors import sieve_of_eratosthenes
+    primes = sieve_of_eratosthenes(2000000)
+    res = sum(primes)
+    assert(res == 142913828922)
+    return res
     # VERY FUCKING SLOW (160s!!)
     # NOT ANY FUCKING MORE (5s!)
+    # EVEN SLOWER with eratosthenes algorithm
 
 
 if __name__ == '__main__':
 
+
+    # func = p4
+
     # ts = time()
-    # print(p10())
+    # print(func())
+    # # [func() for _ in range(10000)]
     # te = time()
-    # print(te - ts)
+    # print("{}(): {} s\n".format(func.__name__, (te - ts)))
+
 
     functions = (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
 
