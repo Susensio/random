@@ -70,7 +70,7 @@ def is_prime_slow(number):
 
 # @timeit
 def is_prime(number):
-    if number == 1:
+    if number <= 1:
         return False
     elif number < 4:
         return True
@@ -122,8 +122,8 @@ if __name__ == "__main__":
     # print(primes_upto(100))
     # print(sieve_of_eratosthenes_slow(100))
     # print(sieve_of_eratosthenes(100))
-    # primes_upto(10000)
-    # sieve_of_eratosthenes(10000)
+    # primes_upto(100000)
+    # sieve_of_eratosthenes(100000)
     # sieve_of_eratosthenes_slow(10000)
     # print(prime_factors(13195))
 
@@ -132,15 +132,18 @@ if __name__ == "__main__":
     # print(factors_slow(4))
     # print(factors(4))
 
-    from time import time
-    ts = time()
-    [factors(number) for number in range(1, 100000)]
-    te = time()
-    print("{}(): {} s\n".format("factors:", (te - ts)))
+    # from time import time
+    # ts = time()
+    # [factors(number) for number in range(1, 100000)]
+    # te = time()
+    # print("{}(): {} s\n".format("factors:", (te - ts)))
+    # ts = time()
+    # [factors_slow(number) for number in range(1, 100000)]
+    # te = time()
+    # print("{}(): {} s\n".format("factors_slow:", (te - ts)))
 
-    ts = time()
-    [factors_slow(number) for number in range(1, 100000)]
-    te = time()
-    print("{}(): {} s\n".format("factors_slow:", (te - ts)))
-
+    # ts = time()
+    # [factors_stackoverflow(number) for number in range(1, 100000)]
+    # te = time()
+    # print("{}(): {} s\n".format("factors_stackoverflow:", (te - ts)))
     pass

@@ -115,6 +115,11 @@ def p24():
 
     What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
     """
+    # Python library approach
+    # from itertools import permutations
+    # perms = list(permutations('0123456789'))[1000000-1]
+    # return ''.join(perms)
+
     # BRUTE FORCE approach
     import sys
     sys.path.append("../chess/")
@@ -122,14 +127,21 @@ def p24():
 
     @memoize
     def permute(digits):
-        if len(digits) == 1:
-            return digits[0]
+        if len(list(digits)) == 1:
+            return digits
         else:
-            return []
+            # perms = []
+            # for digit in digits:
+            #     new_digits = tuple(d for d in digits if d != digit)
+            #     for perm in permute(new_digits):
+            #         perms.append(digit * 10**(len(digits) - 1) + perm)
+            # return perms
 
-    perms = list(permute(tuple(range(2))))
-    # assert(perms[0] == 123456789)
-    return perms
+            return [digit * 10**(len(digits) - 1) + perm
+                    for digit in digits
+                    for perm in permute(tuple(d for d in digits if d != digit))]
+    perms = permute(range(10))
+    return perms[1000000 - 1]
 
 
 def p25():
@@ -137,18 +149,8 @@ def p25():
     The Fibonacci sequence is defined by the recurrence relation:
     Fn = Fn−1 + Fn−2, where F1 = 1 and F2 = 1.
     Hence the first 12 terms will be:
-    F1 = 1
-    F2 = 1
-    F3 = 2
-    F4 = 3
-    F5 = 5
-    F6 = 8
-    F7 = 13
-    F8 = 21
-    F9 = 34
-    F10 = 55
-    F11 = 89
-    F12 = 144
+     1  2  3  4  5  6   7   8   9  10  11   12
+    (1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144)
     The 12th term, F12, is the first term to contain three digits.
 
     What is the index of the first term in the Fibonacci sequence to contain 1000 digits?
@@ -193,6 +195,141 @@ def p26():
     pass
 
 
+def p27():
+    """ Quadratic primes
+    Euler discovered the remarkable quadratic formula:
+    n²+n+41
+    It turns out that the formula will produce 40 primes for the consecutive 
+    integer values 0≤n≤39. However, when n=40, 40²+40+41 = 40(40+1)+41 is divisible by 41, 
+    and certainly when n=41, 41²+41+41 is clearly divisible by 41.
+
+    The incredible formula n²−79n+1601 was discovered, which produces 80 primes 
+    for the consecutive values 0≤n≤79. The product of the coefficients, −79 and 1601, is −126479.
+
+    Considering quadratics of the form
+    n²+an+b, where |a|<1000 and |b|≤1000
+
+    Find the product of the coefficients, a and b, for the quadratic expression that produces 
+    the maximum number of primes for consecutive values of n, starting with n=0.
+    """
+    # BRUTE FORCE
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import is_prime
+
+    def quadratic(a, b, n):
+        return n * n + a * n + b
+
+    ab_values = [(a, b) for a in range(-1000, 1000) for b in range(-1000, 1000)]
+    n = 0
+    while True:
+        print(n, len(ab_values))
+        # new_ab_values = []
+        # for ab in ab_values:
+        #     if len(ab_values) <= 1:
+        #         (a, b) = ab
+        #         return n, 'n²{:+}n{:+}={}'.format(*ab, quadratic(*ab, n)), 'a*b={}'.format(a * b)
+        #     if is_prime(quadratic(*ab, n)):
+        #         new_ab_values.append(ab)
+        # ab_values = new_ab_values
+
+        # OPTIMIZED
+        ab_values = [ab for ab in ab_values if is_prime(quadratic(*ab, n))]
+
+        if len(ab_values) <= 1:
+            (a, b) = ab_values[0]
+            return ('Consecutive primes:{}'.format(n),
+                    'n²{:+}n{:+}={}'.format(a, b, quadratic(a, b, n)),
+                    'a*b={}'.format(a * b))
+        n += 1
+
+
+def p28():
+    """ Number spiral diagonals
+    Starting with the number 1 and moving to the right in a clockwise direction 
+    a 5 by 5 spiral is formed as follows:
+
+       [21] 22  23  24 [25]
+        20  [7]  8  [9] 10
+        19   6  [1]  2  11
+        18  [5]  4  [3] 12
+       [17] 16  15  14 [13]
+
+    It can be verified that the sum of the numbers on the diagonals is 101.
+    What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral formed in the same way?
+    """
+    side = 1001
+
+    def is_diagonal(x, y):
+        return x == y or side - 1 - x == y or side - 1 - y == x
+
+    def can_turn(spiral, x, y, xdir, ydir):
+        xdir, ydir = next_dir(xdir, ydir)
+        return not spiral[x + xdir][y + ydir]
+
+    def next_dir(x, y):
+        """ Clockwise """
+        if (x, y) == (1, 0):
+            return (0, -1)
+        if (x, y) == (0, -1):
+            return (-1, 0)
+        if (x, y) == (-1, 0):
+            return (0, 1)
+        if (x, y) == (0, 1):
+            return (1, 0)
+
+    spiral = [[None for x in range(side)] for y in range(side)]
+
+    x = y = side // 2
+    # Its unimportant the initial direction
+    xdir, ydir = -1, 0
+
+    for n in range(side * side):
+        spiral[x][y] = n + 1
+        if can_turn(spiral, x, y, xdir, ydir):
+            xdir, ydir = next_dir(xdir, ydir)
+        x += xdir
+        y += ydir
+
+    return sum([spiral[x][y] for x in range(side) for y in range(side) if is_diagonal(x, y)])
+
+
+def p29():
+    """ Distinct powers
+    Consider all integer combinations of a^b for 2 ≤ a ≤ 5 and 2 ≤ b ≤ 5:
+
+    2^2=4, 2^3=8, 2^4=16, 2^5=32
+    3^2=9, 3^3=27, 3^4=81, 3^5=243
+    4^2=16, 4^3=64, 4^4=256, 4^5=1024
+    5^2=25, 5^3=125, 5^4=625, 5^5=3125
+    If they are then placed in numerical order, with any repeats removed, 
+    we get the following sequence of 15 distinct terms:
+
+    4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125
+
+    How many distinct terms are in the sequence generated by ab for 2 ≤ a ≤ 100 and 2 ≤ b ≤ 100?
+    """
+    a_max = 100
+    b_max = 100
+
+    return len(set(a**b for a in range(2, a_max + 1) for b in range(2, b_max + 1)))
+
+
+def p30():
+    """ Digit fifth powers
+    Surprisingly there are only three numbers that can be written as the sum of fourth powers of their digits:
+
+    1634 = 1^4 + 6^4 + 3^4 + 4^4
+    8208 = 8^4 + 2^4 + 0^4 + 8^4
+    9474 = 9^4 + 4^4 + 7^4 + 4^4
+    As 1 = 1^4 is not a sum it is not included.
+
+    The sum of these numbers is 1634 + 8208 + 9474 = 19316.
+
+    Find the sum of all the numbers that can be written as the sum of fifth powers of their digits.
+    """
+
+
 if __name__ == '__main__':
 
     # functions = (p21, p22, p23, p24, p25, p26, p27, p28, p29, p30)
@@ -203,7 +340,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p24
+    func = p29
 
     ts = time()
     print(func())
