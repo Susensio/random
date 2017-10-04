@@ -257,7 +257,61 @@ def p17():
     contains 23 letters and 115 (one hundred and fifteen) contains 20 letters.
     The use of "and" when writing out numbers is in compliance with British usage.
     """
-    pass
+    numbers = {
+        1: "one",
+        2: "two",
+        3: "three",
+        4: "four",
+        5: "five",
+        6: "six",
+        7: "seven",
+        8: "eight",
+        9: "nine",
+        10: "ten",
+        11: "eleven",
+        12: "twelve",
+        13: "thirteen",
+        14: "fourteen",
+        15: "fifteen",
+        16: "sixteen",
+        17: "seventeen",
+        18: "eighteen",
+        19: "nineteen",
+        20: "twenty",
+        30: "thirty",
+        40: "forty",
+        50: "fifty",
+        60: "sixty",
+        70: "seventy",
+        80: "eighty",
+        90: "ninety",
+    }
+
+    def number_to_text(n):
+        text = []
+        if n // 1000:
+            text.append(numbers[n // 1000] + "thousand")
+            n = n % 1000
+            # if n:
+            #     text.append("and")
+        if n // 100:
+            text.append(numbers[n // 100] + "hundred")
+            n = n % 100
+            if n:
+                text.append("and")
+
+        for x in sorted(numbers.keys(), reverse=True):
+            if n // x:
+                text.append(numbers[x])
+                n = n % x
+
+        return ''.join(text)
+
+    # numbers_text = [number_to_text(n) for n in range(1, 1001)]
+    # from pprint import pprint
+    # pprint(numbers_text)
+
+    return sum(len(number_to_text(n)) for n in range(1, 1001))
 
 
 def p18():
@@ -389,8 +443,7 @@ if __name__ == '__main__':
         te = time()
         print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-
-    # func = p20
+    func = p17
 
     # ts = time()
     # print(func())
