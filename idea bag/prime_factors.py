@@ -123,8 +123,8 @@ if __name__ == "__main__":
     # print(sieve_of_eratosthenes_slow(100))
     # print(sieve_of_eratosthenes(100))
     # primes_upto(100000)
-    # sieve_of_eratosthenes(100000)
-    # sieve_of_eratosthenes_slow(10000)
+    sieve_of_eratosthenes(10000)
+    sieve_of_eratosthenes_slow(10000)
     # print(prime_factors(13195))
 
     # print(nth_prime(10001))

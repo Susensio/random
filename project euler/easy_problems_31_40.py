@@ -11,7 +11,41 @@ def p31():
     1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
     How many different ways can £2 be made using any number of coins?
     """
-    pass
+    quantity = 200
+    # RECURSION => VERY SLOW for quantity > 200
+    # import sys
+    # sys.path.append("../chess/")
+    # from util import memoize
+
+    # coins = (200, 100, 50, 20, 10, 5, 2, 1)
+
+    # @memoize
+    # def change(amount, coins):
+    #     if coins[0] == 1:
+    #         return [[amount]]
+    #     else:
+    #         return [[count, *perm]
+    #                 for count in range(amount // coins[0] + 1)
+    #                 for perm in change(amount - count * coins[0], tuple(coins[1:]))]
+    # return len(change(quantity, coins))
+
+    # Try DINAMYC PROGRAMMING => WOW! 100x faster
+
+    coins = (1, 2, 5, 10, 20, 50, 100, 200)
+    combinations = [[0 for _ in range(8)] for _ in range(quantity + 1)]
+
+    for amount in range(quantity + 1):
+        for i, coin in enumerate(coins):
+            if coin == 1:
+                combinations[amount][i] = 1
+            else:
+                combinations[amount][i] = (sum([combinations[amount - count * coin][i - 1]
+                                                for count in range(amount // coin)])
+                                           + combinations[amount % coin][i - 1])
+    # from pprint import pprint
+    # pprint(combinations)
+
+    return combinations[quantity][7]
 
 
 def p32():
@@ -40,6 +74,31 @@ def p33():
     pass
 
 
+def p34():
+    pass
+
+
+def p35():
+    """ Circular primes
+    The number, 197, is called a circular prime because all rotations of the digits: 
+    197, 971, and 719, are themselves prime.
+    There are thirteen such primes below 100: 
+    2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
+
+    How many circular primes are there below one million?
+    """
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import is_prime
+
+    def rotations(number):
+        number = str(number)
+        digits = len(number)
+        return tuple(int(number[i:] + number[:i]) for i in range(digits))
+
+    return len([None for number in range(1000000) if all(is_prime(n) for n in rotations(number))])
+
+
 if __name__ == '__main__':
 
     # functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
@@ -50,7 +109,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p31
+    func = p35
 
     ts = time()
     print(func())
