@@ -99,6 +99,68 @@ def p35():
     return len([None for number in range(1000000) if all(is_prime(n) for n in rotations(number))])
 
 
+def p36():
+    """ Double-base palindromes
+    The decimal number, 585 = 10010010012 (binary), is palindromic in both bases.
+    Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+    (Please note that the palindromic number, in either base, may not include leading zeros.)
+    """
+    def is_palindromic(num):
+        number = str(num)
+        return all([number[index] == number[-1 - index] for index in range(0, len(number) // 2)])
+
+    def is_binary_palindromic(num):
+        number = '{0:b}'.format(num)
+        return all([number[index] == number[-1 - index] for index in range(0, len(number) // 2)])
+
+    def is_double_base_palindrome(num):
+        return is_palindromic(num) and is_binary_palindromic(num)
+
+    return sum(num for num in range(1000000) if is_double_base_palindrome(num))
+
+
+def p37():
+    """ Truncatable primes
+    The number 3797 has an interesting property. Being prime itself, it is possible to continuously 
+    remove digits from left to right, and remain prime at each stage: 3797, 797, 97, and 7. 
+    Similarly we can work from right to left: 3797, 379, 37, and 3.
+    Find the sum of the only eleven primes that are both truncatable from left to right and right to left.
+    NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
+    """
+
+
+def p38():
+    pass
+
+
+def p39():
+    """ Integer right triangles
+    If p is the perimeter of a right angle triangle with integral length sides,
+    {a,b,c}, there are exactly three solutions for p = 120.
+    {20,48,52}, {24,45,51}, {30,40,50}
+    For which value of p ≤ 1000, is the number of solutions maximised?
+    """
+    # BRUTE FORCE very slow (84s!!!)
+    from math import ceil
+
+    def is_solution(a, b, c):
+        return (a + b + c == 120) and (a**2 + b**2 == c**2)
+    max_count = 0
+    max_value = 0
+    for p in range(1, 1001):
+        count = 0
+        for c in range(p // 2, p):
+            for a in range(1, int(p * 2**-0.5)):
+                if (p - c - a)**2 == c**2 - a**2:
+                    count += 1
+        if count > max_count:
+            max_count = count
+            max_value = p
+        print(p, count)
+
+    return max_value, max_count
+
+
 if __name__ == '__main__':
 
     # functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
@@ -109,7 +171,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p35
+    func = p39
 
     ts = time()
     print(func())
