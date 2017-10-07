@@ -340,7 +340,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p30
+    func = p24
 
     ts = time()
     print(func())
