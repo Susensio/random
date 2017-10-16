@@ -4,6 +4,7 @@
 # by a relatively small set of initial values, called de PRNG's seeds (which may include truly random values).
 # Make your own (pseudo) random number generator. Accept input from the user specifying the number of
 # random numbers to generate and the PRNG seed. Output a list of pseudo-random numbers.
+from time import time
 
 
 def middle_squared_method(seed=67524858, check=True):
@@ -30,13 +31,32 @@ def linear_congruential_generator(seed=0, modulus=2**32, multiplier=1664525, inc
         yield seed / modulus
 
 
-if __name__ == '__main__':
-    random_gen = middle_squared_method()
-    nums = [next(random_gen) for _ in range(1000)]
-    print('Max: ', max(nums))
-    print('Min: ', min(nums))
-    print('Mean: ', sum(nums) / len(nums))
+def linear_congruential_generator_bit(seed=0, modulus=2**32, multiplier=1664525, increment=1013904223):
+    """ Slightly faster """
+    seed = int(seed)
+    while True:
+        seed = (multiplier * seed + increment) & 0xFFFFFFFF
+        yield seed / modulus
 
-    import matplotlib.pyplot as plt
-    plt.hist(nums)
-    plt.show()
+
+if __name__ == '__main__':
+    # random_gen = middle_squared_method()
+    # nums = [next(random_gen) for _ in range(1000)]
+    # print('Max: ', max(nums))
+    # print('Min: ', min(nums))
+    # print('Mean: ', sum(nums) / len(nums))
+
+    # import matplotlib.pyplot as plt
+    # plt.hist(nums)
+    # plt.show()
+
+    iterations = 10000000
+    random = linear_congruential_generator()
+    ts = time()
+    [next(random) for _ in range(iterations)]
+    print("Modulus: {}s".format(time() - ts))
+
+    random_bit = linear_congruential_generator_bit()
+    ts = time()
+    [next(random_bit) for _ in range(iterations)]
+    print("Bit: {}s".format(time() - ts))

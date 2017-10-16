@@ -188,11 +188,25 @@ def p26():
     Find the value of d < 1000 for which 1/d contains 
     the longest recurring cycle in its decimal fraction part.
     """
-    def recurring_cycle(denominator):
-        number = str(1 / denominator)
-        return number
+    import decimal
+    import re
 
-    pass
+    decimal.getcontext().prec = 10000
+    pattern = re.compile(r"([\d]+?)\1\1")
+
+    def recurring_cycle(denominator):
+        number = str(decimal.Decimal(1) / decimal.Decimal(denominator))
+        search = pattern.search(number)
+        if search:
+            return len(search.group(1))
+        else:
+            return 0
+
+    results = [(number, recurring_cycle(number)) for number in range(1, 1000)]
+    from pprint import pprint
+    pprint(sorted(results, key=lambda x: x[1]))
+
+    return max(results, key=lambda x: x[1])
 
 
 def p27():
@@ -340,7 +354,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p24
+    func = p26
 
     ts = time()
     print(func())
