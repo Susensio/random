@@ -203,10 +203,10 @@ def p26():
             return 0
 
     results = [(number, recurring_cycle(number)) for number in range(1, 1000)]
-    from pprint import pprint
-    pprint(sorted(results, key=lambda x: x[1]))
+    # from pprint import pprint
+    # pprint(sorted(results, key=lambda x: x[1]))
 
-    return max(results, key=lambda x: x[1])
+    return "1/d \td={} \tcycle={}".format(*max(results, key=lambda x: x[1]))
 
 
 def p27():
@@ -342,6 +342,25 @@ def p30():
 
     Find the sum of all the numbers that can be written as the sum of fifth powers of their digits.
     """
+    power = 5
+
+    n = 1
+    while True:
+        """ Solve inequation n*9^5 < 10^(n+1) ===> n > X """
+        n += 0.1
+        if n * 9**power < 10**(n + 1):
+            break
+    limit = int(10**(n + 1)) + 1
+
+    powers = {str(n): n**power for n in range(10)}
+
+    def sum_of_digits_powered(number, power):
+        number = str(number)
+        return sum([powers[n] for n in number])
+
+    numbers = [number for number in range(10, limit) if number == sum_of_digits_powered(number, power)]
+
+    return "sum={}\tnumbers:{}".format(sum(numbers), numbers)
 
 
 if __name__ == '__main__':
@@ -354,7 +373,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p26
+    func = p30
 
     ts = time()
     print(func())
