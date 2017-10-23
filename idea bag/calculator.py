@@ -10,7 +10,16 @@
 
 
 # TOKENIZER
-Token = namedTuple('Token', ['type', 'value'])
+class Token():
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
+
+    def __str__(self):
+        return "{}\t{}".format(self.value, self.type)
+
+    def __repr__(self):
+        return "Token({},'{}')".format(self.type, self.value)
 
 
 def is_digit(ch):
@@ -18,7 +27,8 @@ def is_digit(ch):
 
 
 def is_letter(ch):
-    return all(not func(ch) for func in (is_digit, is_operator, is_left_parenthesis, is_right_parenthesis))
+    return all(not func(ch) for func
+               in (is_digit, is_operator, is_left_parenthesis, is_right_parenthesis))
 
 
 def is_operator(ch):
@@ -40,15 +50,64 @@ def calculate(text):
     return exp
 
 
+def simple_token(c):
+    if is_operator(c):
+        return Token('operator', c)
+    elif is_left_parenthesis(c):
+        return Token('left', c)
+    else:
+        return Token('right', c)
+
+
 def tokenize(text):
     exp = []
     number_buffer = []
     letter_buffer = []
     for c in text:
-        if is_digit(c):
-            number_buffer.append(c)
+        if len(number_buffer):
+            if is_digit(c):
+                number_buffer.append(c)
+            else:
+                exp.append(Token('literal', ''.join(number_buffer)))
+                number_buffer.clear()
+                if is_letter(c):
+                    exp.append(Token('operator', '*'))
+                    letter_buffer.append(c)
+                else:
+                    exp.append(simple_token(c))
+
+        elif len(letter_buffer):
+            if is_letter(c):
+                letter_buffer.append(c)
+            else:
+                if len(letter_buffer) == 1:
+                    exp.append(Token('variable', ''.join(letter_buffer)))
+                else:
+                    exp.append(Token('function', ''.join(letter_buffer)))
+                letter_buffer.clear()
+
+                if is_digit(c):
+                    number_buffer.append(c)
+                else:
+                    exp.append(simple_token(c))
+        else:
+            if is_digit(c):
+                number_buffer.append(c)
+            elif is_letter(c):
+                letter_buffer.append(c)
+            else:
+                exp.append(simple_token(c))
+
+    if len(number_buffer):
+        exp.append(Token('literal', ''.join(number_buffer)))
+    elif len(letter_buffer):
+        exp.append(Token('variable', ''.join(letter_buffer)))
+
     return exp
 
 
-expression = input("Enter expression: ")
-print(calculate(expression))
+# expression = input("Enter expression: ")
+# print(calculate(expression))
+expresion = '56.1+6sen(a)'
+from pprint import pprint
+pprint(tokenize(expresion))
