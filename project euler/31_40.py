@@ -161,6 +161,36 @@ def p39():
     return max_value, max_count
 
 
+def p40():
+    """ Champernowne's constant
+    An irrational decimal fraction is created by concatenating the positive integers:
+    0.12345678910'11'12131415161718192021...
+    It can be seen that the 12th digit of the fractional part is 1.
+    If dn represents the nth digit of the fractional part, find the value of 
+    the following expression.
+    d1 × d10 × d100 × d1000 × d10000 × d100000 × d1000000
+    """
+    def champernowne():
+        count = 0
+        while True:
+            for digit in str(count):
+                yield int(digit)
+            count += 1
+
+    champernowne_generator = champernowne()
+
+    nths = {1, 10, 100, 1000, 10000, 100000, 1000000}
+
+    values = []
+    for n in range(1000001):
+        digit = next(champernowne_generator)
+        if n in nths:
+            values.append(digit)
+
+    from functools import reduce
+    return "digits: {}\nresult: {}".format(values, reduce(lambda x, y: x * y, values))
+
+
 if __name__ == '__main__':
 
     # functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
@@ -171,7 +201,7 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p39
+    func = p40
 
     ts = time()
     print(func())
