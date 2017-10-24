@@ -3,7 +3,8 @@ from time import time
 
 def p31():
     """ Coin sums
-    In England the currency is made up of pound, £, and pence, p, and there are eight coins in general circulation:
+    In England the currency is made up of pound, £, and pence, p, and there are eight coins
+    in general circulation:
 
     1p, 2p, 5p, 10p, 20p, 50p, £1 (100p) and £2 (200p).
     It is possible to make £2 in the following way:
@@ -30,7 +31,6 @@ def p31():
     # return len(change(quantity, coins))
 
     # Try DINAMYC PROGRAMMING => WOW! 100x faster
-
     coins = (1, 2, 5, 10, 20, 50, 100, 200)
     combinations = [[0 for _ in range(8)] for _ in range(quantity + 1)]
 
@@ -55,23 +55,77 @@ def p32():
     The product 7254 is unusual, as the identity, 39 × 186 = 7254, containing multiplicand,
     multiplier, and product is 1 through 9 pandigital.
 
-    Find the sum of all products whose multiplicand/multiplier/product identity can be written as a 1 through 9 pandigital.
-    HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
+    Find the sum of all products whose multiplicand/multiplier/product identity can be written
+    as a 1 through 9 pandigital.
+    HINT: Some products can be obtained in more than one way so be sure to only include it once
+    in your sum.
     """
-    pass
+    from itertools import permutations
+    perms = permutations('123456789')
+    products = []
+
+    for perm in perms:
+        m1 = int(perm[0])
+        m2 = int(''.join(perm[1:5]))
+        p = int(''.join(perm[5:]))
+        if m1 * m2 == p:
+            products.append((m1, m2, p))
+
+        m1 = int(perm[0]) * 10 + int(perm[1])
+        m2 = int(''.join(perm[2:5]))
+        p = int(''.join(perm[5:]))
+        if m1 * m2 == p:
+            products.append((m1, m2, p))
+
+    return sum(set(p[2] for p in products))
 
 
 def p33():
     """ Digit cancelling fractions
     The fraction 49/98 is a curious fraction, as an inexperienced mathematician in attempting
-    to simplify it may incorrectly believe that 49/98 = 4/8, which is correct, is obtained by cancelling the 9s.
-    We shall consider fractions like, 30/50 = 3/5, to be trivial examples.
+    to simplify it may incorrectly believe that 49/98 = 4/8, which is correct, is obtained by
+    cancelling the 9s. We shall consider fractions like, 30/50 = 3/5, to be trivial examples.
     There are exactly four non-trivial examples of this type of fraction, less than one in value,
     and containing two digits in the numerator and denominator.
 
-    If the product of these four fractions is given in its lowest common terms, find the value of the denominator.
+    If the product of these four fractions is given in its lowest common terms, find the value of 
+    the denominator.
     """
-    pass
+    from functools import reduce
+
+    fractions = []
+
+    for cancel in range(1, 10):
+        for num in range(1, 10):
+            for den in range(num + 1, 10):
+                div = num / den
+
+                numerator = num * 10 + cancel
+                denominator = cancel * 10 + den
+                if numerator / denominator == div:
+                    fractions.append((numerator, denominator))
+
+                numerator = cancel * 10 + num
+                denominator = den * 10 + cancel
+                if numerator / denominator == div:
+                    fractions.append((numerator, denominator))
+
+    def gcd(a, b):
+        """ Return the greatest common divisor of the given integers
+        Euclidean algorithm """
+        if b == 0:
+            return a
+        else:
+            return gcd(b, a % b)
+
+    product = reduce(lambda x, y: (x[0] * y[0], x[1] * y[1]), fractions)
+    product_simplified = list(map(lambda x: x // gcd(*product), product))
+
+    return "Fraction: {numerator}/{denominator} = {num}/{den}\nDenominator: {den}".format(
+        numerator=product[0],
+        denominator=product[1],
+        num=product_simplified[0],
+        den=product_simplified[1])
 
 
 def p34():
@@ -124,8 +178,8 @@ def p37():
     The number 3797 has an interesting property. Being prime itself, it is possible to continuously 
     remove digits from left to right, and remain prime at each stage: 3797, 797, 97, and 7. 
     Similarly we can work from right to left: 3797, 379, 37, and 3.
-    Find the sum of the only eleven primes that are both truncatable from left to right and right to left.
-    NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
+    Find the sum of the only eleven primes that are both truncatable from left to right and right 
+    to left. NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
     """
 
 
@@ -201,10 +255,10 @@ if __name__ == '__main__':
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p40
+    func = p33
 
     ts = time()
     print(func())
-    # [func() for _ in range(1000)]
+    [func() for _ in range(1000)]
     te = time()
     print("{}(): {} s\n".format(func.__name__, (te - ts)))
