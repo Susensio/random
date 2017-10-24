@@ -5,7 +5,7 @@ __pycache__/
 
 # P5js library files
 p5js/p5.js
-p5js.min.js
+p5js/p5.min.js
 
 # Windows image file caches
 Thumbs.db
