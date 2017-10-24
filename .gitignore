@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 .idea
 
+# P5js library files
+p5js/p5.js
+p5js.min.js
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
