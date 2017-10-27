@@ -112,7 +112,8 @@ def p33():
 
     def gcd(a, b):
         """ Return the greatest common divisor of the given integers
-        Euclidean algorithm """
+        Euclidean algorithm 
+        """
         if b == 0:
             return a
         else:
@@ -129,7 +130,27 @@ def p33():
 
 
 def p34():
-    pass
+    """ Digit factorials
+    145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
+    Find the sum of all numbers which are equal to the sum of the factorial of their digits.
+    Note: as 1! = 1 and 2! = 2 are not sums they are not included.
+    """
+    from math import factorial
+
+    n = 1
+    while True:
+        """ Upper bound: Solve inequation n*9! < 10^(n+1) ===> n > X """
+        n += 0.1
+        if n * factorial(9) < 10**(n + 1):
+            break
+    limit = int(10**(n + 1)) + 1
+
+    def sum_fact_digits(number):
+        return sum(factorial(int(number)) for number in str(number))
+
+    numbers = [n for n in range(3, limit) if n == sum_fact_digits(n)]
+
+    return "Numbers: {}\nSum: {}".format(numbers, sum(numbers))
 
 
 def p35():
@@ -181,10 +202,77 @@ def p37():
     Find the sum of the only eleven primes that are both truncatable from left to right and right 
     to left. NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
     """
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import is_prime
+
+    def truncatable_prime(number):
+        if number < 10:
+            return False
+        number = str(number)
+        length = len(number)
+        for i in range(length):
+            if not is_prime(int(number[i:])) or not is_prime(int(number[:length - i])):
+                return False
+        return True
+
+    truncatables = []
+    n = 11
+    while len(truncatables) < 11:
+        if truncatable_prime(n):
+            truncatables.append(n)
+        n += 2
+
+    return "Truncatables: {}\nSum: {}".format(truncatables, sum(truncatables))
 
 
 def p38():
-    pass
+    """ Pandigital multiples
+    Take the number 192 and multiply it by each of 1, 2, and 3:
+
+    192 × 1 = 192
+    192 × 2 = 384
+    192 × 3 = 576
+    By concatenating each product we get the 1 to 9 pandigital, 192384576. We will call 192384576
+    the concatenated product of 192 and (1,2,3)
+
+    The same can be achieved by starting with 9 and multiplying by 1, 2, 3, 4, and 5, giving the
+    pandigital, 918273645, which is the concatenated product of 9 and (1,2,3,4,5).
+
+    What is the largest 1 to 9 pandigital 9-digit number that can be formed as the concatenated
+    product of an integer with (1,2, ... , n) where n > 1?
+    """
+    one_to_nine = {str(n) for n in range(1, 10)}
+
+    def concatenated_product(number, factors):
+        products = [number * factor for factor in factors]
+        return int(''.join(str(digit) for digit in products))
+
+    def is_pandigital(number):
+        number = str(number)
+        return len(number) == 9 and all(d in number for d in one_to_nine)
+
+    max_pandigital = 0
+
+    number = 1
+    while True:
+        n = 3
+
+        while True:
+            product = concatenated_product(number, range(1, n))
+            if is_pandigital(product):
+                if product > max_pandigital:
+                    max_pandigital = product
+            if product > (10 ** 10):
+                break
+            n += 1
+
+        number += 1
+        # Limit to half number of digits
+        if number > (10**5):
+            break
+
+    return max_pandigital
 
 
 def p39():
@@ -194,25 +282,53 @@ def p39():
     {20,48,52}, {24,45,51}, {30,40,50}
     For which value of p ≤ 1000, is the number of solutions maximised?
     """
-    # BRUTE FORCE very slow (84s!!!)
-    from math import ceil
+    # # BRUTE FORCE very slow (84s!!!)
+    # max_count = 0
+    # max_value = 0
+    # for p in range(1, 1001):
+    #     count = 0
+    #     for c in range(p // 2, p):
+    #         for a in range(1, int(p * 2**-0.5)):
+    #             if (p - c - a)**2 == c**2 - a**2:
+    #                 count += 1
+    #     if count > max_count:
+    #         max_count = count
+    #         max_value = p
+    #     print(p, count)
+    # return max_value, max_count
 
-    def is_solution(a, b, c):
-        return (a + b + c == 120) and (a**2 + b**2 == c**2)
-    max_count = 0
-    max_value = 0
-    for p in range(1, 1001):
-        count = 0
-        for c in range(p // 2, p):
-            for a in range(1, int(p * 2**-0.5)):
-                if (p - c - a)**2 == c**2 - a**2:
-                    count += 1
-        if count > max_count:
-            max_count = count
-            max_value = p
-        print(p, count)
+    # With Pythagorean triples
+    from collections import Counter
 
-    return max_value, max_count
+    def pythagorean_triple_perimeter(m, n, k):
+        # a = k*(m*m - n*n)
+        # b = k*(2*m * n)
+        # c = k*(m*m + n*n)
+        # p = a+b+c = k*(2*m*m + 2*m*n)
+        return k * (2 * m * m + 2 * m * n)
+
+    def coprimes(a, b):
+        def gcd(a, b):
+            return a if b == 0 else gcd(b, a % b)
+
+        return gcd(a, b) == 1
+
+    cnt = Counter()
+
+    m_max = int(500**0.5)  # 2*m*m < 1000
+
+    for m in range(1, m_max + 1):
+        for n in range(1, m):
+            k = 1
+            if coprimes(m, n) and not (m % 2 and n % 2):  # Not both odd
+                while True:
+                    p = pythagorean_triple_perimeter(m, n, k)
+                    if p >= 1000:
+                        break
+                    cnt.update({p: 1})
+                    k += 1
+
+    return "p = {}\t\tsolutions = {}".format(*cnt.most_common(1)[0])
 
 
 def p40():
@@ -220,7 +336,7 @@ def p40():
     An irrational decimal fraction is created by concatenating the positive integers:
     0.12345678910'11'12131415161718192021...
     It can be seen that the 12th digit of the fractional part is 1.
-    If dn represents the nth digit of the fractional part, find the value of 
+    If dn represents the nth digit of the fractional part, find the value of
     the following expression.
     d1 × d10 × d100 × d1000 × d10000 × d100000 × d1000000
     """
@@ -242,23 +358,23 @@ def p40():
             values.append(digit)
 
     from functools import reduce
-    return "digits: {}\nresult: {}".format(values, reduce(lambda x, y: x * y, values))
+    return "Digits: {}\nResult: {}".format(values, reduce(lambda x, y: x * y, values))
 
 
 if __name__ == '__main__':
 
-    # functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
+    functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
 
-    # for func in functions:
-    #     ts = time()
-    #     print(func())
-    #     te = time()
-    #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    for func in functions:
+        ts = time()
+        print(func())
+        te = time()
+        print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p33
+    # func = p39
 
-    ts = time()
-    print(func())
-    [func() for _ in range(1000)]
-    te = time()
-    print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    # ts = time()
+    # print(func())
+    # # [func() for _ in range(1000)]
+    # te = time()
+    # print("{}(): {} s\n".format(func.__name__, (te - ts)))

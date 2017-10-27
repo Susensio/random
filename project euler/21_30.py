@@ -136,10 +136,10 @@ def p24():
             #     for perm in permute(new_digits):
             #         perms.append(digit * 10**(len(digits) - 1) + perm)
             # return perms
-
             return [digit * 10**(len(digits) - 1) + perm
                     for digit in digits
                     for perm in permute(tuple(d for d in digits if d != digit))]
+
     perms = permute(range(10))
     return perms[1000000 - 1]
 
@@ -237,7 +237,7 @@ def p27():
     ab_values = [(a, b) for a in range(-1000, 1000) for b in range(-1000, 1000)]
     n = 0
     while True:
-        print(n, len(ab_values))
+        # print(n, len(ab_values))
         # new_ab_values = []
         # for ab in ab_values:
         #     if len(ab_values) <= 1:
@@ -365,18 +365,18 @@ def p30():
 
 if __name__ == '__main__':
 
-    # functions = (p21, p22, p23, p24, p25, p26, p27, p28, p29, p30)
+    functions = (p21, p22, p23, p24, p25, p26, p27, p28, p29, p30)
 
-    # for func in functions:
-    #     ts = time()
-    #     print(func())
-    #     te = time()
-    #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    for func in functions:
+        ts = time()
+        print(func())
+        te = time()
+        print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-    func = p30
+    # func = p30
 
-    ts = time()
-    print(func())
-    # [func() for _ in range(1000)]
-    te = time()
-    print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    # ts = time()
+    # print(func())
+    # # [func() for _ in range(1000)]
+    # te = time()
+    # print("{}(): {} s\n".format(func.__name__, (te - ts)))
