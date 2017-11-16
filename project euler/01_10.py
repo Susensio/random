@@ -49,7 +49,7 @@ def p4():
     def is_palindromic(num):
         number = str(num)
         index = 0
-        while index < len(number)//2:
+        while index < len(number) // 2:
             if not number[index] == number[-1 - index]:
                 # Break the loop as soon as not equality is found
                 return False
@@ -199,7 +199,6 @@ def p10():
 
 if __name__ == '__main__':
 
-
     # func = p4
 
     # ts = time()
@@ -208,11 +207,14 @@ if __name__ == '__main__':
     # te = time()
     # print("{}(): {} s\n".format(func.__name__, (te - ts)))
 
-
     functions = (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10)
 
+    tsg = time()
     for func in functions:
         ts = time()
         print(func())
         te = time()
         print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    teg = time()
+
+    print("\nTotal time: {} s".format(teg - tsg))

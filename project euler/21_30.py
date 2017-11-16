@@ -69,8 +69,8 @@ def p22():
 
 def p23():
     """ Non-abundant sums
-    A perfect number is a number for which the sum of its proper divisors is exactly equal to the number.
-    For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28,
+    A perfect number is a number for which the sum of its proper divisors is exactly equal to the
+    number. For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28,
     which means that 28 is a perfect number.
     A number n is called deficient if the sum of its proper divisors is less than n
     and it is called abundant if this sum exceeds n.
@@ -81,7 +81,8 @@ def p23():
     by analysis even though it is known that the greatest number that cannot be expressed
     as the sum of two abundant numbers is less than this limit.
 
-    Find the sum of all the positive integers which CANNOT be written as the sum of two abundant numbers.
+    Find the sum of all the positive integers which CANNOT be written as the sum of two abundant
+    numbers.
     """
     import sys
     sys.path.append("../idea bag/")
@@ -107,8 +108,8 @@ def p23():
 
 def p24():
     """ Lexicographic permutations
-    A permutation is an ordered arrangement of objects. For example, 3124 is one possible permutation of
-    the digits 1, 2, 3 and 4. If all of the permutations are listed numerically or alphabetically,
+    A permutation is an ordered arrangement of objects. For example, 3124 is one possible permutation
+    of the digits 1, 2, 3 and 4. If all of the permutations are listed numerically or alphabetically,
     we call it lexicographic order.
     The lexicographic permutations of 0, 1 and 2 are:
     012   021   102   120   201   210
@@ -331,7 +332,8 @@ def p29():
 
 def p30():
     """ Digit fifth powers
-    Surprisingly there are only three numbers that can be written as the sum of fourth powers of their digits:
+    Surprisingly there are only three numbers that can be written as the sum of fourth powers of
+    their digits:
 
     1634 = 1^4 + 6^4 + 3^4 + 4^4
     8208 = 8^4 + 2^4 + 0^4 + 8^4
@@ -367,11 +369,15 @@ if __name__ == '__main__':
 
     functions = (p21, p22, p23, p24, p25, p26, p27, p28, p29, p30)
 
+    tsg = time()
     for func in functions:
         ts = time()
         print(func())
         te = time()
         print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    teg = time()
+
+    print("\nTotal time: {} s".format(teg - tsg))
 
     # func = p30
 

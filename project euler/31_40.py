@@ -365,13 +365,17 @@ if __name__ == '__main__':
 
     functions = (p31, p32, p33, p34, p35, p36, p37, p38, p39, p40)
 
+    tsg = time()
     for func in functions:
         ts = time()
         print(func())
         te = time()
         print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    teg = time()
 
-    # func = p39
+    print("\nTotal time: {} s".format(teg - tsg))
+
+    # func = p35
 
     # ts = time()
     # print(func())

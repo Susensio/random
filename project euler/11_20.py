@@ -437,16 +437,20 @@ if __name__ == '__main__':
 
     functions = (p11, p12, p13, p14, p15, p16, p17, p18, p19, p20)
 
+    tsg = time()
     for func in functions:
         ts = time()
         print(func())
         te = time()
         print("{}(): {} s\n".format(func.__name__, (te - ts)))
+    teg = time()
+
+    print("\nTotal time: {} s".format(teg - tsg))
 
     # func = p17
 
     # ts = time()
     # print(func())
-    # # [func() for _ in range(10000)]
+    # # [func() for _ in range(1000)]
     # te = time()
     # print("{}(): {} s\n".format(func.__name__, (te - ts)))
