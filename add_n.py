@@ -20,7 +20,8 @@ def setnum():
         """
         MODES:
         0 => Show number
-        1 =>
+        1 => Wait 2s
+        2 => Talk
         """
         nonlocal mode
         nonlocal time
