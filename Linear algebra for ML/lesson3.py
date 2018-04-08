@@ -22,6 +22,9 @@ class Array():
     def __setitem__(self, index, item):
         self.vector[index] = item
 
+    def __eq__(self, other):
+        return all([a == b for a, b in zip(self, other)])
+        
     def __add__(self, other):
         """Elemnt-wise addition.
         a + b = (a1+b1, a2+b2, a3+b3)

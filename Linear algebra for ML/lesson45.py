@@ -22,6 +22,15 @@ class Matrix():
 
     def __len__(self):
         return len(self.matrix)
+    
+    @staticmethod
+    def identity(order):
+        return Matrix([[1 if col == row else 0 for col in range(order)] for row in range(order)])
+        
+    @staticmethod
+    def empty(order):
+        return Matrix([[0 for col in range(order)] for row in range(order)])
+        
 
     @property
     def shape(self):
@@ -216,7 +225,7 @@ class Matrix():
         return self.T == other
 
     def __eq__(self, other):
-        return all([[a == b for a, b in zip(Ai, Bi)] for Ai, Bi in zip(self, other)])
+        return all([Ai == Bi for Ai, Bi in zip(self, other)])
 
     @property
     def trace(self):
@@ -304,7 +313,6 @@ class Matrix():
         >>> B.is_upper_triangular
         False
         """
-#        assert self.is_square, "Not a square matrix"
         return all(e == 0 for i, row in enumerate(self) for j, e in enumerate(row) if (i - j) > 0)
 
     @property
@@ -317,7 +325,6 @@ class Matrix():
         >>> B.is_upper_triangular
         False
         """
-#        assert self.is_square, "Not a square matrix"
         return all(e == 0 for i, row in enumerate(self) for j, e in enumerate(row) if (j - i) > 0)
 
     def echelon_form(self):
@@ -367,11 +374,11 @@ class Matrix():
 
         >>> B = Matrix([[1, 3, 1], [1, 1, -1], [3, 11, 5]])
         >>> B.reduced_echelon_form()
-        Matrix([[1.0, 0.0, -2.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0]])
+        Matrix([[1.0, 0.0, -2.0], [-0.0, 1.0, 1.0], [0.0, 0.0, 0.0]])
 
         >>> C = Matrix([[2, 1, -1, 8], [-3, -1, 2, -11], [-2, 1, 2, -3]])
         >>> C.reduced_echelon_form()
-        Matrix([[1.0, 0.0, -2.0], [0.0, 1.0, 1.0], [0.0, 0.0, 0.0]])
+        Matrix([[1.0, 0.0, 0.0, 2.0], [0.0, 1.0, 0.0, 3.0], [-0.0, -0.0, 1.0, -1.0]])
         """
         M = Matrix(self).echelon_form()
         i = M.shape[0] - 1
@@ -387,35 +394,87 @@ class Matrix():
         return M
 
 
-#    def plu(self):
-#        """Main diagonal.
-#
-#        >>> A = Matrix([[1, 2], [3, 4]])
-#        >>> P, L, U = A.plu
-#        >>> P
-#        Matrix([[0.0, 1.0], [1.0, 0.0]])
-#        >>> L
-#        Matrix([[1.0, 0.0], [0.33333333, 1.0]])
-#        >>> U
-#        Matrix([[3.0, 4.0], [0.0, 0.66666667]])
-#        """
-#
-#        return P, L, U
-#
+    def lu(self):
+        """LU decomposition.
+
+        >>> A = Matrix([[-5, 3, 4], [10, -8, -9], [15, 1, 2]])
+        >>> L, U = A.lu()
+        >>> L
+        Matrix([[1, 0, 0], [-2.0, 1, 0], [-3.0, -5.0, 1]])
+        >>> U
+        Matrix([[-5, 3, 4], [0.0, -2.0, -1.0], [0.0, 0.0, 9.0]])
+        >>> L @ U == A
+        True
+        """
+        assert self.is_square
+        
+        order = self.shape[0]
+        P = Matrix.identity(order)
+        L = Matrix.identity(order)
+        U = Matrix(self)
+        i = 0
+        while i < order:
+            if U[i,i] == 0:
+                return
+            for row in range(i + 1, order):
+                factor = U[row, i] / U[i, i]
+                U[row] = U[row] - factor * U[i]
+                L[row, i] = factor
+                
+            i = i + 1
+            
+        return L, U
+        
+        
+    def plu(self):
+        """PLU decomposition.
+
+        >>> A = Matrix([[1, 2], [3, 4]])
+        >>> P, L, U = A.plu()
+        >>> P @ L @ U == A
+        True
+        
+        >>> B = Matrix([[0, 1, 0], [-8, 8, 1], [2, -2, 0]])
+        >>> P, L, U = B.plu()
+        >>> P
+        Matrix([[0, 1, 0], [1, 0, 0], [0, 0, 1]])
+        >>> L
+        Matrix([[1, 0, 0], [-0.0, 1, 0], [-0.25, 0.0, 1]])
+        >>> U
+        Matrix([[-8, 8, 1], [0.0, 1.0, 0.0], [0.0, 0.0, 0.25]])
+        
+        >>> P @ L @ U == B
+        True
+        """
+        assert self.is_square, "Not an square matrix"
+        
+        order = self.shape[0]
+        P = Matrix.identity(order)
+        L = Matrix.identity(order)
+        U = Matrix(self)
+        i = 0
+        while i < order:
+#            print(U)
+            column = [abs(U[row, i]) for row in range(order) if row >= i]
+            swap_row = column.index(max(column)) + i
+#            print(i, swap_row)
+            if swap_row != i:
+                U[i], U[swap_row] = U[swap_row], U[i]
+                P[i], P[swap_row] = P[swap_row], P[i]
+#            print(P)
+            if U[i,i] == 0:
+                return
+            for row in range(i + 1, order):
+                factor = U[row, i] / U[i, i]
+                U[row] = U[row] - factor * U[i]
+                L[row, i] = factor
+                
+            i = i + 1
+            
+        return P, L, U
 
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-#    M = [[1,2,3],[10,15,20],[-7,8,-9]]
-#    A = Matrix(M)
-#    print(A.det)
-#    M[0][0] = 100
-#    print(A.det)
-#    print(A-B)
-#    print(A.T)
-#    A=Matrix([[1, 1]])
-#    print(A.rank)
-#    A = Matrix([[0, 2, 1, -1], [0, 2, 4, 0], [0, 0, 0, 0]])
-#    print(A)
-#    print(A.echelon_form())
+    
