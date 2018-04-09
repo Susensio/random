@@ -3,6 +3,7 @@
 
 from math import isclose
 
+
 class Array():
 
     def __init__(self, vector):
@@ -25,7 +26,7 @@ class Array():
 
     def __eq__(self, other):
         return all([isclose(a, b, abs_tol=1e-9) for a, b in zip(self, other)])
-        
+
     def __add__(self, other):
         """Elemnt-wise addition.
         a + b = (a1+b1, a2+b2, a3+b3)
@@ -38,13 +39,13 @@ class Array():
         except TypeError:
             addition = [e + other for e in self]
         return Array(addition)
-        
+
     def __radd__(self, other):
         return self + other
-    
+
     def __neg__(self):
         return Array([-e for e in self])
-        
+
     def __sub__(self, other):
         """Elemnt-wise subtraction.
         a - b = (a1-b1, a2-b2, a3-b3)
@@ -102,14 +103,14 @@ class Array():
 
         dot_product = sum(self * other)
         return dot_product
-    
+
     @property
     def norm(self):
         """Strictly positive length or size.
         >>> Array([3, 4]).norm
         5.0
         """
-        return (sum([e*e for e in self]))**0.5
+        return (sum([e * e for e in self]))**0.5
 
 
 if __name__ == '__main__':

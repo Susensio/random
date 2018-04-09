@@ -22,15 +22,23 @@ class Matrix():
 
     def __len__(self):
         return len(self.matrix)
-    
+
     @staticmethod
     def identity(order):
         return Matrix([[1 if col == row else 0 for col in range(order)] for row in range(order)])
-        
+
     @staticmethod
-    def empty(order):
-        return Matrix([[0 for col in range(order)] for row in range(order)])
-        
+    def empty(i, j=None):
+        if not j:
+            j = i
+        return Matrix([[0 for col in range(i)] for row in range(i)])
+
+    @staticmethod
+    def from_diagonal(values):
+        M = Matrix.empty(len(values))
+        for i, val in enumerate(values):
+            M[i, i] = val
+        return M
 
     @property
     def shape(self):
@@ -244,10 +252,10 @@ class Matrix():
 
         >>> A = Matrix([[1, 2], [3, 4]])
         >>> A.diagonal
-        [1, 4]
+        Array([1, 4])
         """
         assert self.is_square
-        return [self[i, i] for i, _ in enumerate(self)]
+        return Array([self[i, i] for i, _ in enumerate(self)])
 
     @property
     def rank(self):
@@ -265,7 +273,6 @@ class Matrix():
         """
         if self.is_square:  # If square matrix, return max of minors' determinant
             side = len(self)
-            det = self.det
             if self.det:
                 return side
             elif side == 1:
@@ -326,11 +333,11 @@ class Matrix():
         False
         """
         return all(e == 0 for i, row in enumerate(self) for j, e in enumerate(row) if (j - i) > 0)
-    
+
     @property
     def is_orthogonal(self):
         """Columns and rows are orthogonal unit vectors.
-        
+
         >>> A = Matrix([[1, 0], [0, 1]])
         >>> A.is_orthogonal
         True
@@ -340,9 +347,8 @@ class Matrix():
         """
         assert self.is_square, "Not an square matrix"
         return self.T == self.inverse
-    
-    
-    
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

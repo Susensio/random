@@ -5,6 +5,7 @@
 # Lesson 07: Singular-Value Decomposition
 # Implement SVD and find 5 applications of this method.
 
+from lesson3 import Array
 from lesson45 import Matrix
 
 
@@ -89,25 +90,25 @@ def lu(matrix):
     True
     """
     assert matrix.is_square
-    
+
     order = matrix.shape[0]
     P = Matrix.identity(order)
     L = Matrix.identity(order)
     U = Matrix(matrix)
     i = 0
     while i < order:
-        if U[i,i] == 0:
+        if U[i, i] == 0:
             return
         for row in range(i + 1, order):
             factor = U[row, i] / U[i, i]
             U[row] = U[row] - factor * U[i]
             L[row, i] = factor
-            
+
         i = i + 1
-        
+
     return L, U
-        
-        
+
+
 def plu(matrix):
     """PLU decomposition.
 
@@ -115,7 +116,7 @@ def plu(matrix):
     >>> P, L, U = plu(A)
     >>> P @ L @ U == A
     True
-    
+
     >>> B = Matrix([[0, 1, 0], [-8, 8, 1], [2, -2, 0]])
     >>> P, L, U = plu(B)
     >>> P
@@ -124,12 +125,12 @@ def plu(matrix):
     Matrix([[1, 0, 0], [-0.0, 1, 0], [-0.25, 0.0, 1]])
     >>> U
     Matrix([[-8, 8, 1], [0.0, 1.0, 0.0], [0.0, 0.0, 0.25]])
-    
+
     >>> P @ L @ U == B
     True
     """
     assert matrix.is_square, "Not an square matrix"
-    
+
     order = matrix.shape[0]
     P = Matrix.identity(order)
     L = Matrix.identity(order)
@@ -141,21 +142,21 @@ def plu(matrix):
         if swap_row != i:
             U[i], U[swap_row] = U[swap_row], U[i]
             P[i], P[swap_row] = P[swap_row], P[i]
-        if U[i,i] == 0:
+        if U[i, i] == 0:
             return
         for row in range(i + 1, order):
             factor = U[row, i] / U[i, i]
             U[row] = U[row] - factor * U[i]
             L[row, i] = factor
-            
+
         i = i + 1
-            
+
     return P, L, U
 
 
 def qr(matrix):
     """Gram-Schmidt process.
-    
+
     >>> A = Matrix([[1, 2], [3, 4]])
     >>> Q, R = qr(A)
     >>> Q.is_orthogonal
@@ -164,7 +165,7 @@ def qr(matrix):
     True
     >>> Q @ R == A
     True
-    
+
     >>> B = Matrix([[1, 1, 0], [1, 0, 1], [0, 1, 1]])
     >>> Q, R = qr(B)
     >>> Q.is_orthogonal
@@ -185,13 +186,13 @@ def qr(matrix):
         Q_cols[i] = e
         for j in range(i + 1):
             R_cols[i, j] = col @ Q_cols[j]
-        
+
     return Q_cols.T, R_cols.T
-    
-    
+
+
 def cholesky(matrix):
     """Cholesky–Banachiewicz algorithm.
-    
+
     >>> A = Matrix([[4, 12, -16], [12, 37, -43], [-16, -43, 98]])
     >>> L = cholesky(A)
     >>> L.is_lower_triangular
@@ -206,14 +207,42 @@ def cholesky(matrix):
     L = Matrix.empty(order)
 #    diag = L.diagonal
     for i in range(order):
-        for j in range(i+1):
+        for j in range(i + 1):
             if i == j:
-                L[i,j] = (matrix[i,j] - sum([L[i,k]**2 for k in range(i)]))**0.5
+                L[i, j] = (matrix[i, j] - sum([L[i, k]**2 for k in range(i)]))**0.5
             else:
-                L[i,j] = (matrix[i,j] - sum([L[i,k] * L[j,k] for k in range(i)])) / L[j,j]
+                L[i, j] = (matrix[i, j] - sum([L[i, k] * L[j, k] for k in range(i)])) / L[j, j]
     return L
-    
-    
+
+
+def eigen(matrix):
+    """QR algorithm.
+
+    >>> A = Matrix([[2, 1], [1, 2]])
+    >>> eigenvalues = eigen(A)
+    >>> eigenvalues == Array([3, 1])
+    True
+
+    >>> B = Matrix([[2, 0, 0], [0, 3, 4], [0, 4, 9]])
+    >>> eigenvalues = eigen(B)
+    >>> eigenvalues == Array([2, 11, 1])
+    True
+    """
+    Q, R = qr(matrix)
+    while True:
+        M = R @ Q
+        _Q, _R = qr(M)
+        if Q == _Q and R == _R:
+            break
+        Q, R = _Q, _R
+
+    order = matrix.shape[0]
+    eigenvalues = M.diagonal
+    for eigenvalue in eigenvalues:
+        A = matrix - eigenvalue * Matrix.identity(shape)
+        A = reduced_echelon_form(A)
+        
+    return eigenvalues
 
 
 if __name__ == '__main__':
