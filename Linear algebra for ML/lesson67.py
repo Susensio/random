@@ -239,9 +239,9 @@ def eigen(matrix):
     order = matrix.shape[0]
     eigenvalues = M.diagonal
     for eigenvalue in eigenvalues:
-        A = matrix - eigenvalue * Matrix.identity(shape)
+        A = matrix - eigenvalue * Matrix.identity(order)
         A = reduced_echelon_form(A)
-        
+
     return eigenvalues
 
 
