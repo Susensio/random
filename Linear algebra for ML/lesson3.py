@@ -112,6 +112,23 @@ class Array():
         """
         return (sum([e * e for e in self]))**0.5
 
+    def collinear(self, other):
+        """Vector have the same direction
+        >>> v = Array([-3, 1, 5])
+        >>> w = Array([6, -2, -10])
+        >>> v.collinear(w)
+        True
+        """
+        return self.direction == other.direction or self.direction == -other.direction
+
+    @property
+    def direction(self):
+        """Calculates unitary direction
+        >>> Array([3, 4]).direction
+        Array([0.6, 0.8])
+        """
+        return self / self.norm
+
 
 if __name__ == '__main__':
     import doctest

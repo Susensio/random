@@ -121,6 +121,8 @@ class Matrix():
         >>> C @ D.T
         Matrix([[1], [-3]])
         """
+        if type(other) in (Array, list):
+            other = Matrix([other]).T
         assert self.shape[1] == other.shape[0], "Matrices not multiplicable"
         product = [[sum([a * b for a, b in zip(Ai, Bj)])  # Vector dot products A_row · B_col
                     for Bj in other.T.matrix] for Ai in self]
@@ -347,6 +349,17 @@ class Matrix():
         """
         assert self.is_square, "Not an square matrix"
         return self.T == self.inverse
+
+    @property
+    def is_normal(self):
+        """
+        >>> A = Matrix([[1, 1, 0], [0, 1, 1], [1, 0, 1]])
+        >>> A.is_normal
+        True
+        """
+
+        assert self.is_square, "Not an square matrix"
+        return (self.T @ self) == (self @ self.T)
 
 
 if __name__ == '__main__':

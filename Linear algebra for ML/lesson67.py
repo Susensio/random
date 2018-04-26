@@ -7,6 +7,7 @@
 
 from lesson3 import Array
 from lesson45 import Matrix
+# from optimization import eigenvector
 
 
 def echelon_form(matrix):
@@ -216,33 +217,51 @@ def cholesky(matrix):
 
 
 def eigen(matrix):
-    """QR algorithm.
+    """QR algorithm, Schur decompossition
 
     >>> A = Matrix([[2, 1], [1, 2]])
-    >>> eigenvalues = eigen(A)
-    >>> eigenvalues == Array([3, 1])
+    >>> expected_eigenvalues = Array([3, 1])
+    >>> expected_eigenvectors = [Array(ev) for ev in [[1, 1], [1, -1]]]
+    >>> eigenvalues, eigenvectors = eigen(A)
+    >>> eigenvalues == expected_eigenvalues
+    True
+    >>> all(result.collinear(expected) for result, expected in zip(eigenvectors, expected_eigenvectors))
     True
 
     >>> B = Matrix([[2, 0, 0], [0, 3, 4], [0, 4, 9]])
-    >>> eigenvalues = eigen(B)
-    >>> eigenvalues == Array([2, 11, 1])
+    >>> expected_eigenvalues = Array([2, 11, 1])
+    >>> expected_eigenvectors = [Array(ev) for ev in [[1, 0, 0], [0, 1, 2], [0, 2, -1]]]
+    >>> eigenvalues, eigenvectors = eigen(B)
+    >>> eigenvalues == expected_eigenvalues
+    True
+    >>> all(result.collinear(expected) for result, expected in zip(eigenvectors, expected_eigenvectors))
     True
     """
-    Q, R = qr(matrix)
+    assert matrix.is_square, "Not an square matrix"
+    A = matrix
+    U = Matrix.identity(A.shape[0])
     while True:
-        M = R @ Q
-        _Q, _R = qr(M)
-        if Q == _Q and R == _R:
+        Q, R = qr(A)
+        A_ = R @ Q
+        if A == A_:
             break
-        Q, R = _Q, _R
+        U = U @ Q
+        A = A_
 
-    order = matrix.shape[0]
-    eigenvalues = M.diagonal
-    for eigenvalue in eigenvalues:
-        A = matrix - eigenvalue * Matrix.identity(order)
-        A = reduced_echelon_form(A)
+    eigenvalues = A.diagonal
+    eigenvectors = [v for v in U.T]
+    return eigenvalues, eigenvectors
 
-    return eigenvalues
+
+def svd(matrix):
+    """Generalization of eigendecomposition
+    M = U Σ V*
+    Where U and V are unitary (orthogonal) matrices
+    and Σ is a non negative diagonal matrix
+    Values in Σ diagonal are the singular values of M
+    """
+
+    return U, s, V
 
 
 if __name__ == '__main__':
