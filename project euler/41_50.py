@@ -138,12 +138,35 @@ def p45():
     Triangle        Tn=n(n+1)/2         1, 3, 6, 10, 15, ...
     Pentagonal      Pn=n(3n−1)/2        1, 5, 12, 22, 35, ...
     Hexagonal       Hn=n(2n−1)          1, 6, 15, 28, 45, ...
-    
+
     It can be verified that T285 = P165 = H143 = 40755.
 
     Find the next triangle number that is also pentagonal and hexagonal.
     """
+    def triangle(n):
+        return n * (n + 1) // 2
 
+    def pentagonal(n):
+        return n * (3 * n - 1) // 2
+
+    def hexagonal(n):
+        return n * (2 * n - 1)
+
+    seeds = [1, 1, 1]
+    formulae = [triangle, pentagonal, hexagonal]
+    polygonals = [1, 1, 1]
+
+    results = []
+
+    while len(results) < 3:
+        if polygonals[0] == polygonals[1] == polygonals[2]:
+            results.append((tuple(seeds), polygonals[0]))
+
+        i = polygonals.index(min(polygonals))
+        seeds[i] += 1
+        polygonals[i] = formulae[i](seeds[i])
+
+    return results
 
 
 if __name__ == '__main__':
