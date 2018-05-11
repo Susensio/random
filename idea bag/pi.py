@@ -3,6 +3,8 @@
 # Try to keep a limit as to how far the program will go.
 import random
 from math import sqrt
+import sys
+sys.path.append("../")
 from timer_decorator import timeit
 import math
 
@@ -13,12 +15,14 @@ def calculate_pi(decimal):
     pi_gen = pi_generator()
     pi_prev = next(pi_gen)
     pi_now = next(pi_gen)
-    while pi_prev//decimal != pi_now//decimal:
+    while pi_prev // decimal != pi_now // decimal:
         pi_prev, pi_now = pi_now, next(pi_gen)
     return pi_now
 
 # Archimedes method
 # If steps > 25, catastrophic cancellation occurs!
+
+
 def polygon(steps):
     sides = 2 ** (steps + 1)
     side_squared = 2
@@ -29,6 +33,8 @@ def polygon(steps):
     return sides * sqrt(side_squared) / 2
 
 # Monte Carlo method, random sampling
+
+
 def montecarlo(points):
     darts = []
     for _ in range(points):
@@ -38,6 +44,8 @@ def montecarlo(points):
 
 # Basel problem
 # ∑(n=1→∞) 1/n² = π²/6
+
+
 @timeit
 def series(components):
     result = 0
@@ -59,6 +67,8 @@ def series_odd(components):
     return pi
 
 # Based on Leibniz formula
+
+
 def pi_generator():
     pi = 0
     natural = 0
@@ -72,7 +82,7 @@ def pi_generator():
 
 
 print("π = {}".format(math.pi))
-    
+
 print(calculate_pi(input("Decimal places of Pi to calculate: ")))
 
 # print("polygon: {}".format(polygon(20)))

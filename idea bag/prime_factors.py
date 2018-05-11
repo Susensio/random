@@ -12,7 +12,7 @@ def prime_factors(number):
     return [n for n in factors(number) if n in primes_list]
 
 
-@timeit
+# @timeit
 def primes_upto(number):
     primes = []
     for n in range(number):
@@ -104,7 +104,7 @@ def sieve_of_eratosthenes_slow(ceil):
 
 
 # Fast implementation of Sieve of Eratosthenes algorithm
-@timeit
+# @timeit
 def sieve_of_eratosthenes(ceil):
     primes = [True] * (ceil + 1)
     primes[0] = primes[1] = False
@@ -122,9 +122,9 @@ if __name__ == "__main__":
     # print(primes_upto(100))
     # print(sieve_of_eratosthenes_slow(100))
     # print(sieve_of_eratosthenes(100))
-    primes_upto(2000000)
-    sieve_of_eratosthenes(2000000)
-    # sieve_of_eratosthenes_slow(10000)
+    primes_upto(10000)
+    sieve_of_eratosthenes(10000)
+    sieve_of_eratosthenes_slow(10000)
     # print(prime_factors(13195))
 
     # print(nth_prime(10001))

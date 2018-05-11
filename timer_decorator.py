@@ -8,7 +8,7 @@ def timeit(method):
         result = method(*args, **kwargs)
         te = time.time()
 
-        print("{} ({}, {}) {:0.6f} ms".format(method.__name__, args, kwargs, (te - ts) * 1000))
+        print("{} ({}, {}) {:0.6f} ms".format(method.__name__, arg, kwargs, (te - ts) * 1000))
         return result
 
     return inner
@@ -44,10 +44,22 @@ def sum_divmod(number):
             s += remainder
 
 
+funcs = {
+    'set': lambda x: len(set(x)) == 1,
+    'count': lambda x: x.count(x[0]) == len(x),
+    'all': lambda x: all(e == x[0] for e in x)
+}
+
+
+@timeit
+def all_the_same(func, x):
+    return funcs[func](x)
+
+
 if __name__ == '__main__':
     number = 1000000
 
-    sum_while(number)
-    sum_divmod(number)
-    sum_maping(number)
-    sum_comprehension(number)
+    # sum_while(number)
+    # sum_divmod(number)
+    # sum_maping(number)
+    # sum_comprehension(number)

@@ -169,6 +169,109 @@ def p45():
     return results
 
 
+def p46():
+    """ Goldbach's other conjecture
+    It was proposed by Christian Goldbach that every odd composite number can be written
+    as the sum of a prime and twice a square.
+
+    9 = 7 + 2×1²
+    15 = 7 + 2×2²
+    21 = 3 + 2×3²
+    25 = 7 + 2×3²
+    27 = 19 + 2×2²
+    33 = 31 + 2×1²
+
+    It turns out that the conjecture was false.
+
+    What is the smallest odd composite that cannot be written as the sum of a prime and twice a square?
+    """
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import is_prime
+    from next_prime import next_prime
+    from itertools import islice
+
+    def odd_composite_generator():
+        """ Odd non-prime number."""
+        n = 1
+        while True:
+            n += 2
+            if not is_prime(n):
+                yield n
+
+    odd_composite = odd_composite_generator()
+
+    primes = [2]
+
+    def primes_upto_atleast(number):
+        """ Generate primes on demand."""
+        while True:
+            np = next_prime(primes[-1])
+            if number < np:
+                break
+            primes.append(np)
+        return primes
+
+    def is_valid(number):
+        for prime in primes_upto_atleast(number):
+            rest = number - prime
+            base = (rest / 2) ** 0.5
+            if base == int(base):
+                return True
+
+    for number in odd_composite:
+        if not is_valid(number):
+            return number
+
+
+def p47():
+    """ Distinct primes factors
+    The first two consecutive numbers to have two distinct prime factors are:
+
+    14 = 2 × 7
+    15 = 3 × 5
+
+    The first three consecutive numbers to have three distinct prime factors are:
+
+    644 = 2² × 7 × 23
+    645 = 3 × 5 × 43
+    646 = 2 × 17 × 19.
+
+    Find the first four consecutive integers to have four distinct prime factors each.
+    What is the first of these numbers?
+    """
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import sieve_of_eratosthenes, factors as factorize
+    from next_prime import next_prime
+    from functools import lru_cache
+
+    primes = set(sieve_of_eratosthenes(100000))
+    biggest = max(primes)
+
+    def primes_upto_atleast(number):
+        """ Generate primes on demand."""
+        nonlocal biggest
+        while True:
+            np = next_prime(biggest)
+            if number < np:
+                break
+            primes.add(np)
+            biggest = np
+        return primes
+
+    @lru_cache(maxsize=4)
+    def prime_factors(number):
+        return [n for n in factorize(number) if n in primes_upto_atleast(number // 2)]
+
+    num = 1000 - 4
+    while True:
+        factors = [len(prime_factors(num + i)) == 4 for i in range(4)]
+        if all(factors):
+            return num
+        num += 4 - factors[::-1].index(False)
+
+
 if __name__ == '__main__':
 
     # functions = (p41, p42, p43, p44, p45, p46, p47, p48, p49, p50)
@@ -178,8 +281,9 @@ if __name__ == '__main__':
     #     print(func())
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
-
-    func = p45
+    import cProfile
+    cProfile.run('p47()')
+    func = p47
 
     ts = time()
     print(func())
