@@ -253,9 +253,9 @@ def p47():
         """ Generate primes on demand."""
         nonlocal biggest
         while True:
-            np = next_prime(biggest)
-            if number < np:
+            if number < biggest:
                 break
+            np = next_prime(biggest)
             primes.add(np)
             biggest = np
         return primes
@@ -272,6 +272,38 @@ def p47():
         num += 4 - factors[::-1].index(False)
 
 
+def p48():
+    """ Self powers
+    The series, 1¹ + 2² + 3³ + ... + 10¹⁰ = 10405071317.
+
+    Find the last ten digits of the series, 1¹ + 2² + 3³ + ... + 1000¹⁰⁰⁰.
+    """
+    def last_ten_digits(number):
+        return number % 10000000000
+
+    accumulator = 0
+    for i in range(1, 1 + 1000):
+        summand = 1
+        for _ in range(i):
+            summand = last_ten_digits(summand * i)
+        accumulator = last_ten_digits(accumulator + summand)
+    return accumulator
+
+
+def p49():
+    """ Prime permutations
+    The arithmetic sequence, 1487, 4817, 8147, in which each of the terms increases by 3330,
+    is unusual in two ways: (i) each of the three terms are prime, and, (ii) each of the 4-digit
+    numbers are permutations of one another.
+
+    There are no arithmetic sequences made up of three 1-, 2-, or 3-digit primes, exhibiting
+    this property, but there is one other 4-digit increasing sequence.
+
+    What 12-digit number do you form by concatenating the three terms in this sequence?
+    """
+    pass
+
+
 if __name__ == '__main__':
 
     # functions = (p41, p42, p43, p44, p45, p46, p47, p48, p49, p50)
@@ -281,9 +313,7 @@ if __name__ == '__main__':
     #     print(func())
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
-    import cProfile
-    cProfile.run('p47()')
-    func = p47
+    func = p48
 
     ts = time()
     print(func())
