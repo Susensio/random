@@ -281,6 +281,10 @@ def p48():
     def last_ten_digits(number):
         return number % 10000000000
 
+    # Brute force
+    return last_ten_digits(sum(i**i for i in range(1, 1 + 1000)))
+
+    # Conservative solution:
     accumulator = 0
     for i in range(1, 1 + 1000):
         summand = 1
@@ -301,6 +305,51 @@ def p49():
 
     What 12-digit number do you form by concatenating the three terms in this sequence?
     """
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import sieve_of_eratosthenes
+    from itertools import permutations
+    from collections import Counter
+
+    primes = sieve_of_eratosthenes(9999)
+    primes_set = set(primes)
+
+    def int_permutations(number):
+        return [int(''.join(n)) for n in permutations(str(number))]
+
+    solutions = []
+    checked = set()
+    for prime in primes:
+        if prime not in checked:
+            perms = int_permutations(prime)
+            prime_perms = sorted({n for n in perms if n in primes_set and n > 999})
+            checked.update(prime_perms)
+            if len(prime_perms) >= 3:
+                for i in range(1, len(prime_perms) - 1):
+                    # Check middle values for equidistancy
+                    left = [prime_perms[i] - perm for perm in prime_perms[:i]]
+                    right = [perm - prime_perms[i] for perm in prime_perms[i + 1:]]
+                    possible = Counter(left + right).most_common(1)[0]
+                    if possible[1] == 2:  # Found!
+                        number = prime_perms[i]
+                        diff = possible[0]
+                        solutions.append((number - diff, number, number + diff))
+
+    # First solution is given solution, join second solution
+    return ''.join([str(n) for n in solutions[1]])
+
+
+def p50():
+    """ Consecutive prime sum
+    The prime 41, can be written as the sum of six consecutive primes:
+
+    41 = 2 + 3 + 5 + 7 + 11 + 13
+    This is the longest sum of consecutive primes that adds to a prime below one-hundred.
+
+    The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms, and is equal to 953.
+
+    Which prime, below one-million, can be written as the sum of the most consecutive primes?
+    """
     pass
 
 
@@ -313,7 +362,7 @@ if __name__ == '__main__':
     #     print(func())
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
-    func = p48
+    func = p49
 
     ts = time()
     print(func())
