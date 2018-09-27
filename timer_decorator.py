@@ -8,7 +8,7 @@ def timeit(method):
         result = method(*args, **kwargs)
         te = time.time()
 
-        print("{} ({}, {}) {:0.6f} ms".format(method.__name__, arg, kwargs, (te - ts) * 1000))
+        print("{} ({}, {}) {:0.6f} ms".format(method.__name__, args, kwargs, (te - ts) * 1000))
         return result
 
     return inner
