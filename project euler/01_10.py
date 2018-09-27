@@ -194,7 +194,7 @@ def p10():
     return res
     # VERY FUCKING SLOW (160s!!)
     # NOT ANY FUCKING MORE (5s!)
-    # EVEN SLOWER with eratosthenes algorithm
+    # EVEN FASTER with eratosthenes algorithm
 
 
 if __name__ == '__main__':

@@ -333,6 +333,7 @@ def p49():
                     if possible[1] == 2:  # Found!
                         number = prime_perms[i]
                         diff = possible[0]
+                        print(number, '+-', diff)
                         solutions.append((number - diff, number, number + diff))
 
     # First solution is given solution, join second solution
@@ -346,11 +347,46 @@ def p50():
     41 = 2 + 3 + 5 + 7 + 11 + 13
     This is the longest sum of consecutive primes that adds to a prime below one-hundred.
 
-    The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms, and is equal to 953.
+    The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms,
+    and is equal to 953.
 
     Which prime, below one-million, can be written as the sum of the most consecutive primes?
     """
-    pass
+    import sys
+    sys.path.append("../idea bag/")
+    from prime_factors import sieve_of_eratosthenes
+    from itertools import accumulate, islice
+
+    max_number = 1000000
+
+    primes = sieve_of_eratosthenes(max_number)
+    primes_hash = set(primes)
+
+    # Slice primes sequence necesary for accumulation
+    *_, end_sequence = (i for i, _ in enumerate(accumulate(primes)))
+    primes_sequences = primes[:end_sequence]
+
+    # acc = 0
+    # for prime in primes:
+    #     acc += prime
+    #     if acc > 0:
+    #         pass
+
+    def is_prime(number):
+        return number in primes_hash
+
+    for length in range(len(primes), 1, -1):
+        # print("length: ", length)
+        for start in range(len(primes) - length):
+            # print("start: ", start)
+            sequence = primes[start:start + length]
+            acc = sum(sequence)
+            if acc > max_number:
+                break
+            if is_prime(acc):
+                # print(len(sequence))
+                return acc
+    # MUY LENTOOOOOOOOOOOOOOOOOOOOOO
 
 
 if __name__ == '__main__':
@@ -362,7 +398,7 @@ if __name__ == '__main__':
     #     print(func())
     #     te = time()
     #     print("{}(): {} s\n".format(func.__name__, (te - ts)))
-    func = p49
+    func = p50
 
     ts = time()
     print(func())
