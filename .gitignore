@@ -25,3 +25,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Python profiling
+*.cprof
